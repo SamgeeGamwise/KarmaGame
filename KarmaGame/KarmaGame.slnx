@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Engine/Engine/Engine.csproj" />
+  <Project Path="../Karma/Karma/Karma.csproj" />
+  <Project Path="../Sandbox/Sandbox/Sandbox.csproj" />
+</Solution>
