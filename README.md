@@ -1,6 +1,6 @@
 # Engine (MonoGame 2D Framework)
 
-This is a reusable engine library evolving from Pong2 toward a node/scene workflow closer to Godot.
+GDD: https://docs.google.com/document/d/153FYGJzrGRPoTR3Qp7OdYFJxWTK2ZeKOiLsObwKkqoo/edit?usp=sharing
 
 ## New to these terms?
 - Start here: `Engine/Beginner Guide.md`
