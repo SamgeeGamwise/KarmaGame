@@ -21,7 +21,7 @@ Think of it like this:
 - Examples: sprites, tilesets, fonts, music, sound effects, dialog text, item data.
 
 ### Scene
-- A “place/context” in the game.
+- A 'place/context' in the game.
 - Examples: main menu, farm map, house interior, pause menu.
 
 ### System
@@ -70,7 +70,7 @@ Why use it:
 - Great for reuse and visual organization.
 
 ### State Machine (Flow Control)
-- Represents “which mode/screen are we in right now?”
+- Represents 'which mode/screen are we in right now?'
 - Good for high-level flow and exclusive states.
 - Example states:
   - `Boot`
@@ -81,13 +81,13 @@ Why use it:
 
 Why use it:
 - Keeps screen flow explicit and predictable.
-- Prevents “all screens active at once” confusion.
+- Prevents 'all screens active at once' confusion.
 
 ### Simple Rule
 - Use `Node` tree for world composition.
 - Use `State` stack for top-level game flow.
 
-## Common 2D Terms You’ll Hear
+## Common 2D Terms You'll Hear
 ### Sprite
 - A 2D image drawn in the game.
 
@@ -136,12 +136,12 @@ Feature: Talking to an NPC
 - Implement actor behavior, systems, and scene flow.
 - Keep engine code generic; keep game rules in game project.
 
-## “What Should I Create?” Cheat Sheet
-- “New map area” -> new `Scene` + tilemap content.
-- “New character” -> new `Actor` + art/content.
-- “Feature used by many objects” -> `System`.
-- “New menu panel” -> `UI`.
-- “Reusable base capability” -> `Engine` code.
+## 'What Should I Create?' Cheat Sheet
+- 'New map area' -> new `Scene` + tilemap content.
+- 'New character' -> new `Actor` + art/content.
+- 'Feature used by many objects' -> `System`.
+- 'New menu panel' -> `UI`.
+- 'Reusable base capability' -> `Engine` code.
 
 ## Practical Tips
 - Name input by intent (`interact`) not key (`EKey`).
@@ -151,10 +151,10 @@ Feature: Talking to an NPC
 - Write short docs/comments when adding new gameplay concepts.
 
 ## Final Summary
-- Actors are “who/what.”
-- Systems are “how rules run.”
-- Scenes are “where/when context.”
-- UI is “what player sees/clicks.”
-- Content is “assets/data.”
+- Actors are 'who/what.'
+- Systems are 'how rules run.'
+- Scenes are 'where/when context.'
+- UI is 'what player sees/clicks.'
+- Content is 'assets/data.'
 - Node tree builds the world.
 - State machine controls game flow.
