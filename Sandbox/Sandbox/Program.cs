@@ -1,2 +1,3 @@
-﻿using var game = new Sandbox.Game1();
+using var game = new Sandbox.Game.SandboxGame();
 game.Run();
+

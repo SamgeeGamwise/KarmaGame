@@ -1,90 +1,33 @@
-# Engine (MonoGame 2D Framework)
+﻿# Engine (MonoGame.Extended-first)
 
-This is a reusable engine library evolving from Pong2 toward a node/scene workflow closer to Godot.
+This project now treats **MonoGame.Extended** as the primary runtime foundation.
 
-## New to these terms?
-- Start here: `Engine/Beginner Guide.md`
+## Active Runtime Surface
+- `Engine.Core.ExtendedGameHost`
+  - Game bootstrap with virtual resolution via `BoxingViewportAdapter`
+  - `OrthographicCamera`
+  - World draw pass with camera transform
+- `Engine.Core.EngineFrameContext`
+  - Engine-facing per-frame context that bridges game code away from raw Extended APIs
+- `Engine.Core.InputBridge`
+  - Action-based input mapping over MonoGame keyboard state
+- `Engine.Core.TiledMapRuntime`
+  - Loads `TiledMap`
+  - Wraps `TiledMapRenderer`
 
+## Why this changed
+The old custom systems overlapped heavily with MonoGame.Extended features (camera, tilemap runtime, scene/state/input wrappers, etc.).
 
-## Goals
-- Reduce game-loop boilerplate.
-- Work with scene composition (`Node`, `Node2D`) instead of monolithic game classes.
-- Use action-based input mappings.
-- Support tilemap-heavy 2D games (farming/life-sim RPG style).
-- Keep code transparent with XML docs and small focused systems.
+This migration reduces duplicated engine maintenance and keeps the project aligned with the Extended ecosystem.
 
-## Current Modules
-- `Core`
-  - `EngineGame`: high-level host with virtual resolution, update pipeline, and world/screen render passes.
-  - `EngineContext`: per-frame services passed into nodes.
-- `Scene`
-  - `Node`, `Node2D`, `SceneTree`, `RenderSpace`.
-- `Input`
-  - `InputState` for raw keyboard/mouse.
-  - `InputMap` with named actions (`Pressed`, `Released`, `Down`, vector helpers).
-- `Graphics`
-  - `VirtualResolutionScaler`.
-  - `Camera2D`.
-  - `SpriteNode2D`.
-- `Tilemap`
-  - `TileSet`, `TileLayer`, `TileMapNode`.
-- `Collision`
-  - Layer-filtered AABB primitives and manifold helpers.
-- `UI`
-  - `Button`, `MenuEntry`, `MenuListNode`.
-- `State`
-  - Optional stack-based state machine (`StateStack<TStateId>`).
+## Packages in use
+- `MonoGame.Extended`
 
-## Mental Model
-- `EngineGame` runs the frame lifecycle.
-- `SceneTree` owns a root `Node`.
-- Nodes use callbacks:
-  - `OnEnterTree` once attached.
-  - `OnReady` first time initialized.
-  - `OnUpdate` each frame.
-  - `OnDraw` in either world or screen pass.
-  - `OnExitTree` when removed.
-- `RenderSpace.World` is camera-aware.
-- `RenderSpace.Screen` is UI/HUD space.
+## Content pipeline note
+If a game project uses Extended content processors, ensure its `.mgcb` has:
 
-## Quick Start
-```csharp
-using Engine.Core;
-using Engine.Input;
-using Engine.Scene;
-using Microsoft.Xna.Framework.Input;
-
-public sealed class MyGame : EngineGame
-{
-    public MyGame() : base(640, 360, useVirtualResolution: true) { }
-
-    protected override void ConfigureInput(InputMap input)
-    {
-        input.BindKey("move_left", Keys.A);
-        input.BindKey("move_right", Keys.D);
-        input.BindKey("move_up", Keys.W);
-        input.BindKey("move_down", Keys.S);
-        input.BindKey("ui_accept", Keys.Enter);
-    }
-
-    protected override Node CreateInitialScene() => new MyRootScene();
-}
+```txt
+/reference:MonoGame.Extended.Content.Pipeline.dll
 ```
 
-## Suggested Project Layout
-- `Game/Scenes`
-- `Game/Actors`
-- `Game/Systems`
-- `Game/UI`
-- `Game/Content`
-
-Keep engine code generic and game-specific behavior in your game project.
-
-## What Is Not Done Yet
-- Animation/state machines for sprites.
-- Built-in save/load system.
-- Rich UI layout containers.
-- Tiled map importers (.tmx/.json).
-- ECS bridge (optional alternative to node-first design).
-
-These are good candidates for part 2.
+See `Engine/Engine/EXTENDED_MIGRATION.md` for overlap details.

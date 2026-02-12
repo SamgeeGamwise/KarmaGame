@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
@@ -25,14 +26,17 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Extended" Version="5.3.1" />
+    <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="5.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Engine\Engine\Engine.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Game\Actors\" />
-    <Folder Include="Game\Content\" />
-    <Folder Include="Game\UI\" />
-    <Folder Include="Game\Systems\" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Game\SandboxGame.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Game\Content\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
