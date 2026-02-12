@@ -67,9 +67,13 @@ public abstract class ExtendedGameHost : Game
 
         var context = new EngineFrameContext(gameTime, Content, SpriteBatch, Camera, Input, VirtualWidth, VirtualHeight);
 
-        SpriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
+        if (AutoBeginWorldSpriteBatch)
+            SpriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
+
         DrawWorld(context);
-        SpriteBatch.End();
+
+        if (AutoBeginWorldSpriteBatch)
+            SpriteBatch.End();
 
         DrawScreen(context);
 
@@ -77,6 +81,12 @@ public abstract class ExtendedGameHost : Game
     }
 
     protected virtual Color ClearColor => Color.Black;
+
+    /// <summary>
+    /// Controls whether the host automatically wraps world draw in SpriteBatch Begin/End.
+    /// Disable when using renderers that manage their own draw batching (for example TiledMapRenderer).
+    /// </summary>
+    protected virtual bool AutoBeginWorldSpriteBatch => true;
 
     protected virtual void ConfigureWindow(GraphicsDeviceManager graphics)
     {

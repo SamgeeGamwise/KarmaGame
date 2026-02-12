@@ -26,3 +26,5 @@
 # OS files
 Thumbs.db
 .DS_Store
+# Build-generated MonoGame.Extended content pipeline references
+**/pipeline-references/

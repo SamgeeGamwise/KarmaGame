@@ -17,6 +17,7 @@
     <Compile Include="Core\EngineFrameContext.cs" />
     <Compile Include="Core\ExtendedGameHost.cs" />
     <Compile Include="Core\InputBridge.cs" />
+    <Compile Include="Core\TiledMapAuthoringProfile.cs" />
     <Compile Include="Core\TiledMapRuntime.cs" />
   </ItemGroup>
 </Project>

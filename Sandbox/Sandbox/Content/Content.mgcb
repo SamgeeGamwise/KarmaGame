@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:../pipeline-references/MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -288,4 +289,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Tileset2.png
+
+#begin Town.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Town.tmx
 

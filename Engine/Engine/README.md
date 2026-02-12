@@ -27,7 +27,9 @@ This migration reduces duplicated engine maintenance and keeps the project align
 If a game project uses Extended content processors, ensure its `.mgcb` has:
 
 ```txt
-/reference:MonoGame.Extended.Content.Pipeline.dll
+/reference:../pipeline-references/MonoGame.Extended.Content.Pipeline.dll
 ```
 
-See `Engine/Engine/EXTENDED_MIGRATION.md` for overlap details.
+See:
+- `Engine/Engine/TILED_WORKFLOW.md` for tileset/map authoring and import contract.
+- `Engine/Engine/EXTENDED_MIGRATION.md` for overlap details.
