@@ -21,7 +21,7 @@ This repo currently includes:
 5. `Sandbox/Sandbox/Content/Maps/README.md` map asset placement notes.
 6. `Codex.md` internal continuation notes for Codex-assisted sessions.
 
-## Windows 11 first-time setup (no dev experience assumed)
+## Windows first-time setup
 Follow these steps in order.
 
 ### 1) Install Visual Studio 2026 Community
