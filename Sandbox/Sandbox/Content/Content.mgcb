@@ -278,6 +278,18 @@
 /processorParam:TextureFormat=Color
 /build:Person.png
 
+#begin Person2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Person2.png
+
 #begin Tileset2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -294,4 +306,9 @@
 /importer:TiledMapImporter
 /processor:TiledMapProcessor
 /build:Town.tmx
+
+#begin UIFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:UIFont.spritefont
 

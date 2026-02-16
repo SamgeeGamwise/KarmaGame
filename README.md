@@ -1,90 +1,77 @@
-# Engine (MonoGame 2D Framework)
+# KarmaGame
 
-GDD: https://docs.google.com/document/d/153FYGJzrGRPoTR3Qp7OdYFJxWTK2ZeKOiLsObwKkqoo/edit?usp=sharing
+High-level 2D game workspace built with MonoGame and MonoGame.Extended.
 
-## New to these terms?
-- Start here: `Engine/Beginner Guide.md`
+This repo currently includes:
+1. `Engine` shared runtime utilities (game host, input bridge, tiled map runtime, Y-sort helpers).
+2. `Sandbox` playable testbed where new systems are prototyped first.
+3. `Karma` game project (separate executable target).
 
+## Repo layout
+1. `Engine/Engine` shared engine code (`Engine.Core.*`).
+2. `Sandbox/Sandbox` sandbox game and content pipeline.
+3. `Karma/Karma` main game executable project.
+4. `KarmaGame/KarmaGame.slnx` solution file that includes all projects.
 
-## Goals
-- Reduce game-loop boilerplate.
-- Work with scene composition (`Node`, `Node2D`) instead of monolithic game classes.
-- Use action-based input mappings.
-- Support tilemap-heavy 2D games (farming/life-sim RPG style).
-- Keep code transparent with XML docs and small focused systems.
+## Helpful docs in this repo
+1. `Engine/Engine/README.md` engine runtime surface and migration notes.
+2. `Engine/Engine/TILED_WORKFLOW.md` Tiled authoring contract and map pipeline.
+3. `Engine/Engine/EXTENDED_MIGRATION.md` old-vs-new architecture details.
+4. `Engine/Engine/ROADMAP.md` medium/long-term direction.
+5. `Sandbox/Sandbox/Content/Maps/README.md` map asset placement notes.
+6. `Codex.md` internal continuation notes for Codex-assisted sessions.
 
-## Current Modules
-- `Core`
-  - `EngineGame`: high-level host with virtual resolution, update pipeline, and world/screen render passes.
-  - `EngineContext`: per-frame services passed into nodes.
-- `Scene`
-  - `Node`, `Node2D`, `SceneTree`, `RenderSpace`.
-- `Input`
-  - `InputState` for raw keyboard/mouse.
-  - `InputMap` with named actions (`Pressed`, `Released`, `Down`, vector helpers).
-- `Graphics`
-  - `VirtualResolutionScaler`.
-  - `Camera2D`.
-  - `SpriteNode2D`.
-- `Tilemap`
-  - `TileSet`, `TileLayer`, `TileMapNode`.
-- `Collision`
-  - Layer-filtered AABB primitives and manifold helpers.
-- `UI`
-  - `Button`, `MenuEntry`, `MenuListNode`.
-- `State`
-  - Optional stack-based state machine (`StateStack<TStateId>`).
+## Windows 11 first-time setup (no dev experience assumed)
+Follow these steps in order.
 
-## Mental Model
-- `EngineGame` runs the frame lifecycle.
-- `SceneTree` owns a root `Node`.
-- Nodes use callbacks:
-  - `OnEnterTree` once attached.
-  - `OnReady` first time initialized.
-  - `OnUpdate` each frame.
-  - `OnDraw` in either world or screen pass.
-  - `OnExitTree` when removed.
-- `RenderSpace.World` is camera-aware.
-- `RenderSpace.Screen` is UI/HUD space.
+### 1) Install Visual Studio 2026 Community
+1. Go to the official Visual Studio download page and install `Visual Studio 2026 Community`.
+2. In the Visual Studio Installer, select workloads:
+   - `.NET desktop development`
+   - `Game development with C++`
+3. In the installer, ensure `.NET 9 SDK` (or newer SDK that can target .NET 9/8) is installed.
+4. Finish installation and reboot Windows if prompted.
 
-## Quick Start
-```csharp
-using Engine.Core;
-using Engine.Input;
-using Engine.Scene;
-using Microsoft.Xna.Framework.Input;
+### 2) Install Git (required for cloning)
+1. Download and install `Git for Windows` from the official Git site.
+2. Keep default installer options if you are unsure.
 
-public sealed class MyGame : EngineGame
-{
-    public MyGame() : base(640, 360, useVirtualResolution: true) { }
+### 3) Clone the repository in Visual Studio
+1. Open Visual Studio.
+2. Click `Clone a repository`.
+3. Paste your GitHub repo URL.
+4. Choose a local folder, for example: `C:\Dev\KarmaGame`.
+5. Click `Clone`.
+6. After cloning, open `KarmaGame\KarmaGame.slnx` if Visual Studio does not open it automatically.
 
-    protected override void ConfigureInput(InputMap input)
-    {
-        input.BindKey("move_left", Keys.A);
-        input.BindKey("move_right", Keys.D);
-        input.BindKey("move_up", Keys.W);
-        input.BindKey("move_down", Keys.S);
-        input.BindKey("ui_accept", Keys.Enter);
-    }
+### 4) Restore/build once
+1. Wait while Visual Studio restores NuGet packages (bottom status bar).
+2. Build once: `Build` -> `Build Solution`.
+3. First build may take a few minutes because content pipeline tools are restored.
 
-    protected override Node CreateInitialScene() => new MyRootScene();
-}
-```
+### 5) Run Sandbox (recommended first run)
+1. In Solution Explorer, right-click `Sandbox` project.
+2. Click `Set as Startup Project`.
+3. Press `F5` (Run with debugger) or `Ctrl+F5` (Run without debugger).
+4. Controls:
+   - `W A S D` move
+   - `Left Shift` run
+   - `Esc` exit
 
-## Suggested Project Layout
-- `Game/Scenes`
-- `Game/Actors`
-- `Game/Systems`
-- `Game/UI`
-- `Game/Content`
+### 6) Run Karma project (optional)
+1. Right-click `Karma` project.
+2. Click `Set as Startup Project`.
+3. Press `F5` or `Ctrl+F5`.
 
-Keep engine code generic and game-specific behavior in your game project.
+## If something fails
+1. Close any running game window before rebuilding (locks `Sandbox.exe`).
+2. If build says SDK missing, install the requested `.NET SDK` and restart Visual Studio.
+3. If content build fails, run `Build -> Rebuild Solution` once.
+4. If cloning/auth fails, verify your GitHub account has access to the private repo URL.
 
-## What Is Not Done Yet
-- Animation/state machines for sprites.
-- Built-in save/load system.
-- Rich UI layout containers.
-- Tiled map importers (.tmx/.json).
-- ECS bridge (optional alternative to node-first design).
-
-These are good candidates for part 2.
+## Command-line alternative (optional)
+If you prefer terminal:
+1. `git clone <your-repo-url>`
+2. `cd KarmaGame`
+3. `dotnet build KarmaGame/KarmaGame.slnx`
+4. `dotnet run --project Sandbox/Sandbox/Sandbox.csproj`

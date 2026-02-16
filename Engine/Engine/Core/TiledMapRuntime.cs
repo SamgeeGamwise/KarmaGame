@@ -184,6 +184,10 @@ public sealed class TiledMapRuntime
         if (!tileLayer.TryGetTile((ushort)tileX, (ushort)tileY, out TiledMapTile? tile) || tile is null)
             return false;
 
-        return !tile.Value.IsBlank;
+        // Tiled encodes flip/rotation in the high 3 bits of the raw global ID.
+        // Treat a tile as blocked only when the base global ID is non-zero.
+        const uint tiledFlipMask = 0x1FFF_FFFF;
+        uint baseGlobalId = (uint)tile.Value.GlobalIdentifier & tiledFlipMask;
+        return baseGlobalId != 0;
     }
 }
