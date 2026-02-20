@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -114,19 +115,46 @@ public sealed class TiledMapRuntime
     public bool TryGetObjectPosition(string objectLayerName, string objectName, out Vector2 position)
     {
         position = Vector2.Zero;
-        if (!TryGetObjectLayer(objectLayerName, out TiledMapObjectLayer? objectLayer) || objectLayer is null)
+        if (!TryGetNamedObject(objectLayerName, objectName, out TiledMapObject? mapObject) || mapObject is null)
             return false;
 
-        foreach (TiledMapObject mapObject in objectLayer.Objects)
-        {
-            if (!string.Equals(mapObject.Name, objectName, StringComparison.Ordinal))
-                continue;
+        position = mapObject.Position;
+        return true;
+    }
 
-            position = mapObject.Position;
+    public bool TryGetObjectAnchorPosition(string objectLayerName, string objectName, out Vector2 position)
+    {
+        position = Vector2.Zero;
+        if (!TryGetNamedObject(objectLayerName, objectName, out TiledMapObject? mapObject) || mapObject is null)
+            return false;
+
+        Vector2 objectPosition = mapObject.Position;
+        if (TryGetExplicitObjectSize(mapObject, out Vector2 explicitSize))
+        {
+            position = objectPosition + explicitSize * 0.5f;
             return true;
         }
 
-        return false;
+        position = objectPosition;
+        return true;
+    }
+
+    public bool TryGetObjectRectangle(string objectLayerName, string objectName, out Rectangle rectangle)
+    {
+        rectangle = Rectangle.Empty;
+        if (!TryGetNamedObject(objectLayerName, objectName, out TiledMapObject? mapObject) || mapObject is null)
+            return false;
+
+        Vector2 position = mapObject.Position;
+        Vector2 size = TryGetExplicitObjectSize(mapObject, out Vector2 explicitSize)
+            ? explicitSize
+            : new Vector2(Map.TileWidth, Map.TileHeight);
+        rectangle = new Rectangle(
+            (int)MathF.Floor(position.X),
+            (int)MathF.Floor(position.Y),
+            Math.Max(1, (int)MathF.Ceiling(size.X)),
+            Math.Max(1, (int)MathF.Ceiling(size.Y)));
+        return true;
     }
 
     public bool IsWorldPointBlocked(string collisionLayerName, Vector2 worldPosition)
@@ -190,4 +218,145 @@ public sealed class TiledMapRuntime
         uint baseGlobalId = (uint)tile.Value.GlobalIdentifier & tiledFlipMask;
         return baseGlobalId != 0;
     }
+
+    private bool TryGetNamedObject(string objectLayerName, string objectName, out TiledMapObject? foundObject)
+    {
+        foundObject = null;
+        if (!TryGetObjectLayer(objectLayerName, out TiledMapObjectLayer? objectLayer) || objectLayer is null)
+            return false;
+
+        foreach (TiledMapObject mapObject in objectLayer.Objects)
+        {
+            if (!string.Equals(mapObject.Name, objectName, StringComparison.Ordinal))
+                continue;
+
+            foundObject = mapObject;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetExplicitObjectSize(TiledMapObject mapObject, out Vector2 size)
+    {
+        size = Vector2.Zero;
+        Type type = mapObject.GetType();
+        if (TryGetNumericProperty(type, mapObject, "Width", out float width) &&
+            TryGetNumericProperty(type, mapObject, "Height", out float height))
+        {
+            size = new Vector2(width, height);
+            return true;
+        }
+
+        object? sizeValue = GetPropertyValue(type, mapObject, "Size");
+        if (TryExtractSize(sizeValue, out Vector2 extractedSize))
+        {
+            size = extractedSize;
+            return true;
+        }
+
+        object? boundsValue = GetPropertyValue(type, mapObject, "Bounds") ??
+                              GetPropertyValue(type, mapObject, "BoundingRectangle") ??
+                              GetPropertyValue(type, mapObject, "Rectangle");
+        if (TryExtractSize(boundsValue, out extractedSize))
+        {
+            size = extractedSize;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetNumericProperty(Type type, object instance, string propertyName, out float value)
+    {
+        value = default;
+        PropertyInfo? property = type.GetProperty(
+            propertyName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+        if (property is not null)
+        {
+            object? raw = property.GetValue(instance);
+            return TryConvertToFloat(raw, out value);
+        }
+
+        return TryGetNumericField(type, instance, propertyName, out value);
+    }
+
+    private static object? GetPropertyValue(Type type, object instance, string propertyName)
+    {
+        PropertyInfo? property = type.GetProperty(
+            propertyName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+        if (property is not null)
+            return property.GetValue(instance);
+
+        FieldInfo? field = type.GetField(
+            propertyName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+        return field?.GetValue(instance);
+    }
+
+    private static bool TryExtractSize(object? value, out Vector2 size)
+    {
+        size = Vector2.Zero;
+        if (value is null)
+            return false;
+
+        if (value is Vector2 vector)
+        {
+            size = vector;
+            return true;
+        }
+
+        Type valueType = value.GetType();
+        if (TryGetNumericProperty(valueType, value, "Width", out float width) &&
+            TryGetNumericProperty(valueType, value, "Height", out float height))
+        {
+            size = new Vector2(width, height);
+            return true;
+        }
+
+        if (TryGetNumericProperty(valueType, value, "X", out float x) &&
+            TryGetNumericProperty(valueType, value, "Y", out float y))
+        {
+            size = new Vector2(x, y);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryConvertToFloat(object? raw, out float value)
+    {
+        value = default;
+        switch (raw)
+        {
+            case float f:
+                value = f;
+                return true;
+            case double d:
+                value = (float)d;
+                return true;
+            case int i:
+                value = i;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static bool TryGetNumericField(Type type, object instance, string fieldName, out float value)
+    {
+        value = default;
+        FieldInfo? field = type.GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+        if (field is null)
+            return false;
+
+        object? raw = field.GetValue(instance);
+        return TryConvertToFloat(raw, out value);
+    }
 }
+
+

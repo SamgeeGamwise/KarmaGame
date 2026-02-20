@@ -36,6 +36,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="Game\Config\SandboxGameSettings.cs" />
+    <Compile Include="Game\Config\SandboxGameSettingsLoader.cs" />
     <Compile Include="Game\SandboxGame.cs" />
     <Compile Include="Game\Scene\SandboxScene.cs" />
     <Compile Include="Game\Scene\MapNode.cs" />

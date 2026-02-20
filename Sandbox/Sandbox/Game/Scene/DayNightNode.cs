@@ -1,33 +1,28 @@
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Sandbox.Game.Config;
 
 namespace Sandbox.Game;
 
 internal sealed class DayNightNode
 {
-    private const int MinutesPerDay = 24 * 60;
-    private const int MidnightMinutes = 0;
-    private const int DayStartMinutes = 6 * 60;
-    private const int DayEndMinutes = 2 * 60;
-    private const int MinutesPerTick = 180;
-    private const float SecondsPerTick = 5f;
-
-    private static readonly TintKeyframe[] TintTimeline =
-    [
-        new(MidnightMinutes, new Color(24, 32, 62), 0.44f),
-        new(DayEndMinutes, new Color(12, 18, 40), 0.56f),      // 2:00 AM (night starts)
-        new(5 * 60, new Color(34, 42, 70), 0.30f),             // 5:00 AM
-        new(DayStartMinutes, new Color(255, 214, 170), 0.16f), // 6:00 AM (day starts)
-        new(12 * 60, new Color(255, 255, 255), 0.04f),         // Noon
-        new(18 * 60, new Color(255, 188, 140), 0.14f),         // 6:00 PM
-        new(22 * 60, new Color(42, 50, 86), 0.32f),            // 10:00 PM
-    ];
-
+    private readonly DayNightSettings _settings;
+    private readonly TintKeyframe[] _tintTimeline;
     private Texture2D _pixel = null!;
     private SpriteFont _clockFont = null!;
-    private int _currentMinutes = DayStartMinutes;
+    private int _currentMinutes;
     private float _tickTimer;
+
+    public DayNightNode(DayNightSettings settings)
+    {
+        _settings = settings;
+        _currentMinutes = settings.StartMinutes;
+        _tintTimeline = settings.TintTimeline
+            .Select(t => new TintKeyframe(t.Minutes, t.Color.ToColor(), t.Alpha))
+            .ToArray();
+    }
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
@@ -39,10 +34,10 @@ internal sealed class DayNightNode
     public void Update(float deltaSeconds)
     {
         _tickTimer += deltaSeconds;
-        while (_tickTimer >= SecondsPerTick)
+        while (_tickTimer >= _settings.SecondsPerTick)
         {
-            _tickTimer -= SecondsPerTick;
-            _currentMinutes = (_currentMinutes + MinutesPerTick) % MinutesPerDay;
+            _tickTimer -= _settings.SecondsPerTick;
+            _currentMinutes = (_currentMinutes + _settings.MinutesPerTick) % _settings.MinutesPerDay;
         }
     }
 
@@ -57,7 +52,7 @@ internal sealed class DayNightNode
 
         string clockText = FormatClock(_currentMinutes);
         Vector2 textSize = _clockFont.MeasureString(clockText);
-        const int panelPadding = 8;
+        int panelPadding = _settings.ClockPanelPadding;
         Rectangle panelRect = new(
             screenWidth - (int)textSize.X - panelPadding * 2 - 16,
             16,
@@ -68,21 +63,21 @@ internal sealed class DayNightNode
         spriteBatch.DrawString(_clockFont, clockText, new Vector2(panelRect.X + panelPadding, panelRect.Y + panelPadding), Color.White);
     }
 
-    private static TintSample ComputeTint(int minutes)
+    private TintSample ComputeTint(int minutes)
     {
-        if (TintTimeline.Length == 0)
+        if (_tintTimeline.Length == 0)
             return new TintSample(Color.White, 0f);
 
-        for (int i = 0; i < TintTimeline.Length; i++)
+        for (int i = 0; i < _tintTimeline.Length; i++)
         {
-            TintKeyframe from = TintTimeline[i];
-            TintKeyframe to = i == TintTimeline.Length - 1
-                ? new TintKeyframe(TintTimeline[0].Minutes + MinutesPerDay, TintTimeline[0].Color, TintTimeline[0].Alpha)
-                : TintTimeline[i + 1];
+            TintKeyframe from = _tintTimeline[i];
+            TintKeyframe to = i == _tintTimeline.Length - 1
+                ? new TintKeyframe(_tintTimeline[0].Minutes + _settings.MinutesPerDay, _tintTimeline[0].Color, _tintTimeline[0].Alpha)
+                : _tintTimeline[i + 1];
 
             int adjustedMinutes = minutes;
-            if (to.Minutes > MinutesPerDay && adjustedMinutes < from.Minutes)
-                adjustedMinutes += MinutesPerDay;
+            if (to.Minutes > _settings.MinutesPerDay && adjustedMinutes < from.Minutes)
+                adjustedMinutes += _settings.MinutesPerDay;
 
             if (adjustedMinutes < from.Minutes || adjustedMinutes > to.Minutes)
                 continue;
@@ -93,7 +88,7 @@ internal sealed class DayNightNode
             return new TintSample(color, alpha);
         }
 
-        TintKeyframe fallback = TintTimeline[0];
+        TintKeyframe fallback = _tintTimeline[0];
         return new TintSample(fallback.Color, fallback.Alpha);
     }
 

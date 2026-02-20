@@ -1,41 +1,47 @@
+using System;
 using Engine.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Sandbox.Game.Config;
 
 namespace Sandbox.Game;
 
 public sealed class SandboxGame : ExtendedGameHost
 {
-    private const string DefaultMapAsset = "Town";
+    private static readonly SandboxGameSettings Settings = SandboxGameSettingsLoader.Load();
 
-    private readonly SandboxScene _scene = new(DefaultMapAsset, TiledMapAuthoringProfile.Default);
+    private readonly SandboxScene _scene = new(Settings, TiledMapAuthoringProfile.Default);
 
-    public SandboxGame() : base(640, 360)
+    public SandboxGame() : base(Settings.Window.VirtualWidth, Settings.Window.VirtualHeight)
     {
     }
 
-    protected override Color ClearColor => new(24, 29, 38);
+    protected override Color ClearColor => Settings.Render.ClearColor.ToColor();
 
     protected override bool AutoBeginWorldSpriteBatch => false;
 
     protected override void ConfigureWindow(GraphicsDeviceManager graphics)
     {
         base.ConfigureWindow(graphics);
-        graphics.PreferredBackBufferWidth = 1280;
-        graphics.PreferredBackBufferHeight = 720;
+        graphics.PreferredBackBufferWidth = Settings.Window.BackBufferWidth;
+        graphics.PreferredBackBufferHeight = Settings.Window.BackBufferHeight;
         graphics.ApplyChanges();
-        Window.AllowUserResizing = true;
+        Window.AllowUserResizing = Settings.Window.AllowUserResizing;
     }
 
     protected override void ConfigureInput(InputBridge input)
     {
-        input.BindKey("move_left", Keys.A);
-        input.BindKey("move_right", Keys.D);
-        input.BindKey("move_up", Keys.W);
-        input.BindKey("move_down", Keys.S);
-        input.BindKey("run", Keys.LeftShift);
-        input.BindKey("exit", Keys.Escape);
+        foreach (InputBindingSettings binding in Settings.Input.Bindings)
+        {
+            if (!Enum.TryParse(binding.Key, ignoreCase: true, out Keys key))
+            {
+                Console.WriteLine($"[Sandbox] unknown key '{binding.Key}' for action '{binding.Action}' in gameplay settings.");
+                continue;
+            }
+
+            input.BindKey(binding.Action, key);
+        }
     }
 
     protected override void OnLoadContent()

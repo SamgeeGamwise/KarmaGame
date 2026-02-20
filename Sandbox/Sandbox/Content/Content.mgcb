@@ -307,6 +307,11 @@
 /processor:TiledMapProcessor
 /build:Town.tmx
 
+#begin HouseInterior.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:HouseInterior.tmx
+
 #begin UIFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

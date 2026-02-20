@@ -4,26 +4,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Sandbox.Game;
+namespace Sandbox.Game.Scene;
 
-internal sealed class MapNode
+internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapProfile)
 {
-    private readonly string _mapAssetName;
-    private readonly TiledMapAuthoringProfile _mapProfile;
-
     private Texture2D _fallbackTileset = null!;
     private TiledMapRuntime? _runtime;
-
-    public MapNode(string mapAssetName, TiledMapAuthoringProfile mapProfile)
-    {
-        _mapAssetName = mapAssetName;
-        _mapProfile = mapProfile;
-    }
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
         _fallbackTileset = content.Load<Texture2D>("Tileset2");
-        if (TiledMapRuntime.TryLoad(content, graphicsDevice, _mapAssetName, out var mapRuntime))
+        if (TiledMapRuntime.TryLoad(content, graphicsDevice, mapAssetName, out var mapRuntime))
             _runtime = mapRuntime;
     }
 
@@ -34,9 +25,28 @@ internal sealed class MapNode
 
     public bool TryGetPlayerSpawn(out Vector2 spawn)
     {
-        spawn = default;
+        return TryGetObjectAnchorPosition(mapProfile.PlayerSpawnObjectName, out spawn);
+    }
+
+    public bool TryGetObjectPosition(string objectName, out Vector2 position)
+    {
+        position = default;
         return _runtime is not null &&
-               _runtime.TryGetObjectPosition(_mapProfile.SpawnObjectLayerName, _mapProfile.PlayerSpawnObjectName, out spawn);
+               _runtime.TryGetObjectPosition(mapProfile.SpawnObjectLayerName, objectName, out position);
+    }
+
+    public bool TryGetObjectAnchorPosition(string objectName, out Vector2 position)
+    {
+        position = default;
+        return _runtime is not null &&
+               _runtime.TryGetObjectAnchorPosition(mapProfile.SpawnObjectLayerName, objectName, out position);
+    }
+
+    public bool TryGetObjectRectangle(string objectName, out Rectangle rectangle)
+    {
+        rectangle = Rectangle.Empty;
+        return _runtime is not null &&
+               _runtime.TryGetObjectRectangle(mapProfile.SpawnObjectLayerName, objectName, out rectangle);
     }
 
     public bool IsWorldRectangleBlocked(Rectangle worldRect)
@@ -44,7 +54,7 @@ internal sealed class MapNode
         if (_runtime is null)
             return false;
 
-        return _runtime.IsWorldRectangleBlocked(_mapProfile.CollisionLayerName, worldRect);
+        return _runtime.IsWorldRectangleBlocked(mapProfile.CollisionLayerName, worldRect);
     }
 
     public Vector2 ClampPlayerPosition(Vector2 position, int frameWidth, int frameHeight, int viewportWidth, int viewportHeight)
@@ -73,7 +83,7 @@ internal sealed class MapNode
     {
         if (_runtime is not null)
         {
-            _runtime.DrawLayers(_mapProfile.BackgroundLayerNames, view);
+            _runtime.DrawLayers(mapProfile.BackgroundLayerNames, view);
             return;
         }
 
@@ -82,7 +92,7 @@ internal sealed class MapNode
 
     public void DrawForeground(Matrix view)
     {
-        _runtime?.DrawLayers(_mapProfile.ForegroundLayerNames, view);
+        _runtime?.DrawLayers(mapProfile.ForegroundLayerNames, view);
     }
 
     private void DrawFallbackFloor(SpriteBatch spriteBatch, int virtualWidth, int virtualHeight)
