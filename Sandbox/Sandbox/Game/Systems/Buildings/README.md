@@ -1,0 +1,1 @@
+# Buildings\nPlaceholder for building ownership, upgrades, and interior variants.\n

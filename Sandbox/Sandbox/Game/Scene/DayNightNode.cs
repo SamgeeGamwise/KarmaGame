@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -24,6 +25,10 @@ internal sealed class DayNightNode
             .ToArray();
     }
 
+    public int CurrentMinutes => _currentMinutes;
+
+    public string CurrentClockText => FormatClock(_currentMinutes);
+
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
         _clockFont = content.Load<SpriteFont>("UIFont");
@@ -31,14 +36,34 @@ internal sealed class DayNightNode
         _pixel.SetData([Color.White]);
     }
 
-    public void Update(float deltaSeconds)
+    public void Update(float deltaSeconds, bool isPaused = false)
     {
+        if (isPaused)
+            return;
+
         _tickTimer += deltaSeconds;
         while (_tickTimer >= _settings.SecondsPerTick)
         {
             _tickTimer -= _settings.SecondsPerTick;
             _currentMinutes = (_currentMinutes + _settings.MinutesPerTick) % _settings.MinutesPerDay;
         }
+    }
+
+    public void SetCurrentMinutes(int minutes)
+    {
+        _currentMinutes = Math.Clamp(minutes, 0, _settings.MinutesPerDay - 1);
+        _tickTimer = 0f;
+    }
+
+    public bool IsWithinRange(int startMinutes, int endMinutes)
+    {
+        if (startMinutes == endMinutes)
+            return true;
+
+        if (startMinutes < endMinutes)
+            return _currentMinutes >= startMinutes && _currentMinutes <= endMinutes;
+
+        return _currentMinutes >= startMinutes || _currentMinutes <= endMinutes;
     }
 
     public void DrawScreen(SpriteBatch spriteBatch, int _virtualWidth, int _virtualHeight)

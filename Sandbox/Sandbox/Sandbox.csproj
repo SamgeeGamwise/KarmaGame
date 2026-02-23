@@ -36,14 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Game\Config\SandboxGameSettings.cs" />
-    <Compile Include="Game\Config\SandboxGameSettingsLoader.cs" />
-    <Compile Include="Game\SandboxGame.cs" />
-    <Compile Include="Game\Scene\SandboxScene.cs" />
-    <Compile Include="Game\Scene\MapNode.cs" />
-    <Compile Include="Game\Scene\PlayerNode.cs" />
-    <Compile Include="Game\Scene\CameraNode.cs" />
-    <Compile Include="Game\Scene\DayNightNode.cs" />
+    <Compile Include="Game\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Content\**\*.json" CopyToOutputDirectory="PreserveNewest" />

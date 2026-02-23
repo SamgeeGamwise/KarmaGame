@@ -10,7 +10,9 @@ public sealed class TiledMapAuthoringProfile
 
     public string[] BackgroundLayerNames { get; init; } = ["Ground", "Collision", "GroundDetails", "Buildings"];
 
-    public string[] ForegroundLayerNames { get; init; } = ["AbovePlayer"];
+    public string[] YSortForegroundLayerNames { get; init; } = ["AbovePlayer"];
+
+    public string[] ForegroundLayerNames { get; init; } = [];
 
     public static TiledMapAuthoringProfile Default { get; } = new();
 }

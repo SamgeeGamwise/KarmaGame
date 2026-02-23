@@ -1,0 +1,1 @@
+# Inventory\nPlaceholder for stack rules, equipment slots, and item metadata.\n

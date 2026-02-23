@@ -16,7 +16,7 @@ Use these layer names unless you intentionally change `TiledMapAuthoringProfile`
 - `GroundDetails` (tile layer)
 - `Buildings` (tile layer)
 - `Collision` (tile layer, non-empty tile = blocked)
-- `AbovePlayer` (tile layer rendered after player)
+- `AbovePlayer` (tile layer converted to y-sorted overhang drawables)
 - `Spawns` (object layer)
 
 Runtime defaults are defined in `Engine/Core/TiledMapAuthoringProfile.cs`.

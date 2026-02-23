@@ -1,0 +1,1 @@
+# Interior Maps\nPlace dedicated per-building interior TMX files here when no longer shared.\n

@@ -18,6 +18,12 @@
       { "action": "run", "key": "LeftShift" },
       { "action": "action", "key": "E" },
       { "action": "toggle_debug", "key": "F3" },
+      { "action": "menu_toggle", "key": "Tab" },
+      { "action": "menu_next", "key": "Down" },
+      { "action": "menu_previous", "key": "Up" },
+      { "action": "menu_confirm", "key": "Enter" },
+      { "action": "menu_back", "key": "Back" },
+      { "action": "debug_add_money", "key": "F6" },
       { "action": "exit", "key": "Escape" }
     ]
   },
@@ -29,6 +35,8 @@
     "cameraZoom": 1.5,
     "portalTransitionCooldownSeconds": 0.35,
     "drawPortalDebugOverlay": true,
+    "freezeWorldWhileMenuOpen": true,
+    "freezeWorldWhileDialogueOpen": true,
     "portals": [
       {
         "sourceMapAssetName": "Town",
@@ -41,6 +49,41 @@
         "triggerObjectName": "DoorToTown",
         "targetMapAssetName": "Town",
         "targetSpawnObjectName": "TownFromHouse"
+      }
+    ],
+    "buildings": [
+      {
+        "buildingId": "home",
+        "displayName": "Player Home",
+        "exteriorMapAssetName": "Town",
+        "enterTriggerObjectName": "DoorToHouse",
+        "interiorMapAssetName": "HouseInterior",
+        "interiorSpawnObjectName": "HouseFromTown",
+        "exitTriggerObjectName": "DoorToTown",
+        "exteriorSpawnObjectName": "TownFromHouse",
+        "isPlayerHome": true
+      },
+      {
+        "buildingId": "blacksmith",
+        "displayName": "Placeholder Blacksmith",
+        "exteriorMapAssetName": "Town",
+        "enterTriggerObjectName": "DoorToBlacksmith",
+        "interiorMapAssetName": "HouseInterior",
+        "interiorSpawnObjectName": "HouseFromTown",
+        "exitTriggerObjectName": "DoorToTown",
+        "exteriorSpawnObjectName": "TownFromBlacksmith",
+        "isPlayerHome": false
+      },
+      {
+        "buildingId": "library",
+        "displayName": "Placeholder Library",
+        "exteriorMapAssetName": "Town",
+        "enterTriggerObjectName": "DoorToLibrary",
+        "interiorMapAssetName": "HouseInterior",
+        "interiorSpawnObjectName": "HouseFromTown",
+        "exitTriggerObjectName": "DoorToTown",
+        "exteriorSpawnObjectName": "TownFromLibrary",
+        "isPlayerHome": false
       }
     ]
   },
@@ -59,7 +102,7 @@
   "dayNight": {
     "minutesPerDay": 1440,
     "startMinutes": 360,
-    "minutesPerTick": 60,
+    "minutesPerTick": 360,
     "secondsPerTick": 5.0,
     "clockPanelPadding": 8,
     "tintTimeline": [
@@ -70,6 +113,109 @@
       { "minutes": 720, "color": { "r": 255, "g": 255, "b": 255 }, "alpha": 0.04 },
       { "minutes": 1080, "color": { "r": 255, "g": 188, "b": 140 }, "alpha": 0.14 },
       { "minutes": 1320, "color": { "r": 42, "g": 50, "b": 86 }, "alpha": 0.32 }
+    ]
+  },
+  "npcs": {
+    "definitions": [
+      {
+        "npcId": "npc_guard",
+        "displayName": "Town Guard",
+        "mapAssetName": "Town",
+        "spawnObjectName": "",
+        "fallbackX": 520.0,
+        "fallbackY": 402.0,
+        "spriteSheetAssetName": "Person2",
+        "targetHeightInPixels": 24,
+        "interactionRange": 22.0,
+        "dialogueLines": [
+          "Morning. Keep your coin purse close.",
+          "Placeholder quest hooks will live here."
+        ]
+      },
+      {
+        "npcId": "npc_farmer",
+        "displayName": "Field Farmer",
+        "mapAssetName": "Town",
+        "spawnObjectName": "",
+        "fallbackX": 336.0,
+        "fallbackY": 270.0,
+        "spriteSheetAssetName": "Person2",
+        "targetHeightInPixels": 24,
+        "interactionRange": 22.0,
+        "dialogueLines": [
+          "These crops are temporary, but the grind is permanent.",
+          "Someday this spot will run farming loops."
+        ]
+      },
+      {
+        "npcId": "npc_scholar",
+        "displayName": "Library Scholar",
+        "mapAssetName": "HouseInterior",
+        "spawnObjectName": "",
+        "fallbackX": 176.0,
+        "fallbackY": 160.0,
+        "spriteSheetAssetName": "Person2",
+        "targetHeightInPixels": 24,
+        "interactionRange": 24.0,
+        "dialogueLines": [
+          "This house interior is a stand-in for every building.",
+          "Lore and codex pages will connect here."
+        ]
+      }
+    ]
+  },
+  "interaction": {
+    "npcInteractionRange": 22.0,
+    "showInteractionHints": true,
+    "notificationDurationSeconds": 2.6
+  },
+  "menu": {
+    "toggleInputActionName": "menu_toggle",
+    "nextItemInputActionName": "menu_next",
+    "previousItemInputActionName": "menu_previous",
+    "confirmInputActionName": "menu_confirm",
+    "backInputActionName": "menu_back",
+    "pauseWorldWhileOpen": true,
+    "drawControlHints": true
+  },
+  "economy": {
+    "startingMoney": 125,
+    "debugAddMoneyActionName": "debug_add_money",
+    "debugAddMoneyAmount": 10
+  },
+  "progression": {
+    "startingLevel": 1,
+    "startingInventory": [
+      "Bedroll",
+      "Copper Key",
+      "Starter Pickaxe"
+    ],
+    "startingSkills": [
+      { "name": "Foraging", "level": 1 },
+      { "name": "Crafting", "level": 1 },
+      { "name": "Negotiation", "level": 1 }
+    ],
+    "startingLore": [
+      "The settlement was rebuilt after the Silent Storm.",
+      "Most buildings share a common interior while the district expands."
+    ]
+  },
+  "sleep": {
+    "enabled": true,
+    "sleepActionInputActionName": "action",
+    "allowSleepAnytime": false,
+    "earliestSleepMinutes": 1080,
+    "latestSleepMinutes": 300,
+    "wakeMinutes": 360,
+    "spots": [
+      {
+        "mapAssetName": "HouseInterior",
+        "triggerObjectName": "BedSleepSpot",
+        "fallbackX": 160.0,
+        "fallbackY": 140.0,
+        "fallbackRadius": 18.0,
+        "promptText": "Sleep in bed"
+      }
     ]
   }
 }
