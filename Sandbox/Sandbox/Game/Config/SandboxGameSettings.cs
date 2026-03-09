@@ -15,6 +15,8 @@ internal sealed class SandboxGameSettings
 
     public PlayerSettings Player { get; set; } = PlayerSettings.CreateDefault();
 
+    public CameraSettings Camera { get; set; } = CameraSettings.CreateDefault();
+
     public DayNightSettings DayNight { get; set; } = DayNightSettings.CreateDefault();
 
     public NpcSystemSettings Npcs { get; set; } = NpcSystemSettings.CreateDefault();
@@ -163,6 +165,13 @@ internal sealed class PlayerSettings
     public int DoorInteractionHeight { get; set; } = 17;
 
     public static PlayerSettings CreateDefault() => new();
+}
+
+internal sealed class CameraSettings
+{
+    public float ZoomSpeed { get; set; } = 0.5f;
+
+    public static CameraSettings CreateDefault() => new();
 }
 
 internal sealed class DayNightSettings
@@ -465,6 +474,16 @@ internal sealed class NpcDefinitionSettings
     public float FallbackY { get; set; }
 
     public string SpriteSheetAssetName { get; set; } = "Person2";
+
+    public int FrameWidth { get; set; } = 23;
+
+    public int FrameHeight { get; set; } = 36;
+
+    public int SourceOffsetX { get; set; } = 1;
+
+    public int SourceOffsetY { get; set; } = 1;
+
+    public int FeetBottomInset { get; set; } = 3;
 
     public int TargetHeightInPixels { get; set; } = 24;
 

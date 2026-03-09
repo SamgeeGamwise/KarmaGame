@@ -5,17 +5,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Sandbox.Game.Scene.UI;
 
-internal sealed class NotificationFeedNode
+internal sealed class NotificationFeedNode(float defaultLifetimeSeconds)
 {
     private readonly Queue<NotificationEntry> _entries = new();
-    private readonly float _defaultLifetimeSeconds;
+    private readonly float _defaultLifetimeSeconds = defaultLifetimeSeconds;
     private SpriteFont _font = null!;
     private Texture2D _pixel = null!;
-
-    public NotificationFeedNode(float defaultLifetimeSeconds)
-    {
-        _defaultLifetimeSeconds = defaultLifetimeSeconds;
-    }
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {

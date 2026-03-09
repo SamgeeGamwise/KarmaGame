@@ -7,18 +7,12 @@ using Sandbox.Game.Config;
 
 namespace Sandbox.Game.Scene.Npc;
 
-internal sealed class NpcRosterNode
+internal sealed class NpcRosterNode(NpcSystemSettings settings, InteractionSettings interactionSettings)
 {
-    private readonly List<NpcNode> _npcs;
-    private readonly float _defaultInteractionRange;
-
-    public NpcRosterNode(NpcSystemSettings settings, InteractionSettings interactionSettings)
-    {
-        _defaultInteractionRange = interactionSettings.NpcInteractionRange;
-        _npcs = settings.Definitions
+    private readonly List<NpcNode> _npcs = settings.Definitions
             .Select(definition => new NpcNode(definition))
             .ToList();
-    }
+    private readonly float _defaultInteractionRange = interactionSettings.NpcInteractionRange;
 
     public void LoadContent(ContentManager content, IReadOnlyDictionary<string, MapNode> mapsByAssetName)
     {

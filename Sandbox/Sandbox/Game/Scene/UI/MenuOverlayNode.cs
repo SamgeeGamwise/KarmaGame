@@ -7,7 +7,7 @@ using Sandbox.Game.Scene.Progression;
 
 namespace Sandbox.Game.Scene.UI;
 
-internal sealed class MenuOverlayNode
+internal sealed class MenuOverlayNode(MenuSettings settings)
 {
     private static readonly string[] Tabs =
     [
@@ -18,15 +18,10 @@ internal sealed class MenuOverlayNode
         "Buildings"
     ];
 
-    private readonly MenuSettings _settings;
+    private readonly MenuSettings _settings = settings;
     private SpriteFont _font = null!;
     private Texture2D _pixel = null!;
     private int _tabIndex;
-
-    public MenuOverlayNode(MenuSettings settings)
-    {
-        _settings = settings;
-    }
 
     public bool IsOpen { get; private set; }
 

@@ -242,35 +242,24 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
 
     private readonly record struct TileTransform(float Rotation, SpriteEffects Effects);
 
-    private sealed class TileLayerDrawable : IYSortDrawable
+    private sealed class TileLayerDrawable(
+        Texture2D texture,
+        Rectangle sourceRect,
+        Vector2 worldPosition,
+        int worldTileWidth,
+        int worldTileHeight,
+MapNode.TileTransform transform) : IYSortDrawable
     {
-        private readonly Texture2D _texture;
-        private readonly Rectangle _sourceRect;
-        private readonly Vector2 _position;
-        private readonly Vector2 _origin;
-        private readonly Vector2 _scale;
-        private readonly TileTransform _transform;
-
-        public TileLayerDrawable(
-            Texture2D texture,
-            Rectangle sourceRect,
-            Vector2 worldPosition,
-            int worldTileWidth,
-            int worldTileHeight,
-            TileTransform transform)
-        {
-            _texture = texture;
-            _sourceRect = sourceRect;
-            _transform = transform;
-            _scale = new Vector2(
+        private readonly Texture2D _texture = texture;
+        private readonly Rectangle _sourceRect = sourceRect;
+        private readonly Vector2 _position = worldPosition + new Vector2(worldTileWidth * 0.5f, worldTileHeight * 0.5f);
+        private readonly Vector2 _origin = new Vector2(sourceRect.Width * 0.5f, sourceRect.Height * 0.5f);
+        private readonly Vector2 _scale = new Vector2(
                 worldTileWidth / (float)sourceRect.Width,
                 worldTileHeight / (float)sourceRect.Height);
-            _origin = new Vector2(sourceRect.Width * 0.5f, sourceRect.Height * 0.5f);
-            _position = worldPosition + new Vector2(worldTileWidth * 0.5f, worldTileHeight * 0.5f);
-            YSort = worldPosition.Y + worldTileHeight;
-        }
+        private readonly TileTransform _transform = transform;
 
-        public float YSort { get; }
+        public float YSort { get; } = worldPosition.Y + worldTileHeight;
 
         public void Draw(SpriteBatch spriteBatch)
         {

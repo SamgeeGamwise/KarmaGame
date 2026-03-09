@@ -1,20 +1,20 @@
 using System;
+using Engine.Core;
 using Microsoft.Xna.Framework;
+using Sandbox.Game.Config;
 using Sandbox.Game.Scene;
 
 namespace Sandbox.Game;
 
-internal sealed class CameraNode
+internal sealed class CameraNode(CameraSettings settings, float startingZoom)
 {
-    private readonly float _zoom;
+    private float _zoom = startingZoom;
+    private readonly float _zoomSpeed = settings.ZoomSpeed;
 
-    public CameraNode(float zoom)
+    public void Update(EngineFrameContext context, PlayerNode playerNode, MapNode mapNode)
     {
-        _zoom = zoom;
-    }
-
-    public void Update(Engine.Core.EngineFrameContext context, PlayerNode playerNode, MapNode mapNode)
-    {
+        _zoom += context.Input.ScrollingUp ? _zoomSpeed : 0;
+        _zoom += context.Input.ScrollingDown ? -_zoomSpeed : 0;
         context.Camera.Zoom = _zoom;
 
         Vector2 cameraTarget = playerNode.Position +

@@ -10,6 +10,7 @@ public abstract class ExtendedGameHost : Game
 {
     private readonly GraphicsDeviceManager _graphics;
     private KeyboardState _previousKeyboard;
+    private MouseState _previousMouse;
 
     protected ExtendedGameHost(int virtualWidth = 640, int virtualHeight = 360)
     {
@@ -53,8 +54,12 @@ public abstract class ExtendedGameHost : Game
     protected sealed override void Update(GameTime gameTime)
     {
         KeyboardState keyboard = Keyboard.GetState();
-        Input.Update(keyboard, _previousKeyboard);
+        MouseState mouse = Mouse.GetState();
+        
+        Input.Update(keyboard, _previousKeyboard, mouse, _previousMouse);
+
         _previousKeyboard = keyboard;
+        _previousMouse = mouse;
 
         var context = new EngineFrameContext(gameTime, Content, SpriteBatch, Camera, Input, VirtualWidth, VirtualHeight);
         OnUpdateGame(context);

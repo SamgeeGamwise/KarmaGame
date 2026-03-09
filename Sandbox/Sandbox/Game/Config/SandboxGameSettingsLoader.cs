@@ -49,6 +49,7 @@ internal static class SandboxGameSettingsLoader
         loaded.Input ??= InputSettings.CreateDefault();
         loaded.Scene ??= SceneSettings.CreateDefault();
         loaded.Player ??= PlayerSettings.CreateDefault();
+        loaded.Camera ??= CameraSettings.CreateDefault();
         loaded.DayNight ??= DayNightSettings.CreateDefault();
         loaded.Npcs ??= NpcSystemSettings.CreateDefault();
         loaded.Interaction ??= InteractionSettings.CreateDefault();
@@ -81,6 +82,8 @@ internal static class SandboxGameSettingsLoader
         loaded.Player.DoorInteractionWidth = EnsurePositive(loaded.Player.DoorInteractionWidth, defaults.Player.DoorInteractionWidth);
         loaded.Player.DoorInteractionHeight = EnsurePositive(loaded.Player.DoorInteractionHeight, defaults.Player.DoorInteractionHeight);
         loaded.Player.SpriteSheetAssetName = EnsureNotBlank(loaded.Player.SpriteSheetAssetName, defaults.Player.SpriteSheetAssetName);
+
+        loaded.Camera.ZoomSpeed = EnsurePositive(loaded.Camera.ZoomSpeed, defaults.Camera.ZoomSpeed);
 
         loaded.DayNight.MinutesPerDay = EnsurePositive(loaded.DayNight.MinutesPerDay, defaults.DayNight.MinutesPerDay);
         loaded.DayNight.MinutesPerTick = EnsurePositive(loaded.DayNight.MinutesPerTick, defaults.DayNight.MinutesPerTick);
@@ -173,6 +176,11 @@ internal static class SandboxGameSettingsLoader
         foreach (NpcDefinitionSettings npc in loaded.Npcs.Definitions)
         {
             npc.SpriteSheetAssetName = EnsureNotBlank(npc.SpriteSheetAssetName, "Person2");
+            npc.FrameWidth = EnsurePositive(npc.FrameWidth, 23);
+            npc.FrameHeight = EnsurePositive(npc.FrameHeight, 36);
+            npc.SourceOffsetX = EnsureNonNegative(npc.SourceOffsetX, 1);
+            npc.SourceOffsetY = EnsureNonNegative(npc.SourceOffsetY, 1);
+            npc.FeetBottomInset = EnsureNonNegative(npc.FeetBottomInset, 3);
             npc.TargetHeightInPixels = EnsurePositive(npc.TargetHeightInPixels, 24);
             npc.InteractionRange = EnsurePositive(npc.InteractionRange, loaded.Interaction.NpcInteractionRange);
             npc.DialogueLines ??= [];

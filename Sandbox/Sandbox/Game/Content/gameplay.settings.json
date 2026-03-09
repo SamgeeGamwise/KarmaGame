@@ -7,24 +7,70 @@
     "allowUserResizing": true
   },
   "render": {
-    "clearColor": { "r": 24, "g": 29, "b": 38 }
+    "clearColor": {
+      "r": 24,
+      "g": 29,
+      "b": 38
+    }
   },
   "input": {
     "bindings": [
-      { "action": "move_left", "key": "A" },
-      { "action": "move_right", "key": "D" },
-      { "action": "move_up", "key": "W" },
-      { "action": "move_down", "key": "S" },
-      { "action": "run", "key": "LeftShift" },
-      { "action": "action", "key": "E" },
-      { "action": "toggle_debug", "key": "F3" },
-      { "action": "menu_toggle", "key": "Tab" },
-      { "action": "menu_next", "key": "Down" },
-      { "action": "menu_previous", "key": "Up" },
-      { "action": "menu_confirm", "key": "Enter" },
-      { "action": "menu_back", "key": "Back" },
-      { "action": "debug_add_money", "key": "F6" },
-      { "action": "exit", "key": "Escape" }
+      {
+        "action": "move_left",
+        "key": "A"
+      },
+      {
+        "action": "move_right",
+        "key": "D"
+      },
+      {
+        "action": "move_up",
+        "key": "W"
+      },
+      {
+        "action": "move_down",
+        "key": "S"
+      },
+      {
+        "action": "run",
+        "key": "LeftShift"
+      },
+      {
+        "action": "action",
+        "key": "E"
+      },
+      {
+        "action": "toggle_debug",
+        "key": "F3"
+      },
+      {
+        "action": "menu_toggle",
+        "key": "Tab"
+      },
+      {
+        "action": "menu_next",
+        "key": "Down"
+      },
+      {
+        "action": "menu_previous",
+        "key": "Up"
+      },
+      {
+        "action": "menu_confirm",
+        "key": "Enter"
+      },
+      {
+        "action": "menu_back",
+        "key": "Back"
+      },
+      {
+        "action": "debug_add_money",
+        "key": "F6"
+      },
+      {
+        "action": "exit",
+        "key": "Escape"
+      }
     ]
   },
   "scene": {
@@ -99,6 +145,9 @@
     "doorInteractionWidth": 9,
     "doorInteractionHeight": 17
   },
+  "camera": {
+    "zoomSpeed": 0.25
+  },
   "dayNight": {
     "minutesPerDay": 1440,
     "startMinutes": 360,
@@ -106,13 +155,69 @@
     "secondsPerTick": 5.0,
     "clockPanelPadding": 8,
     "tintTimeline": [
-      { "minutes": 0, "color": { "r": 24, "g": 32, "b": 62 }, "alpha": 0.44 },
-      { "minutes": 120, "color": { "r": 12, "g": 18, "b": 40 }, "alpha": 0.56 },
-      { "minutes": 300, "color": { "r": 34, "g": 42, "b": 70 }, "alpha": 0.30 },
-      { "minutes": 360, "color": { "r": 255, "g": 214, "b": 170 }, "alpha": 0.16 },
-      { "minutes": 720, "color": { "r": 255, "g": 255, "b": 255 }, "alpha": 0.04 },
-      { "minutes": 1080, "color": { "r": 255, "g": 188, "b": 140 }, "alpha": 0.14 },
-      { "minutes": 1320, "color": { "r": 42, "g": 50, "b": 86 }, "alpha": 0.32 }
+      {
+        "minutes": 0,
+        "color": {
+          "r": 24,
+          "g": 32,
+          "b": 62
+        },
+        "alpha": 0.44
+      },
+      {
+        "minutes": 120,
+        "color": {
+          "r": 12,
+          "g": 18,
+          "b": 40
+        },
+        "alpha": 0.56
+      },
+      {
+        "minutes": 300,
+        "color": {
+          "r": 34,
+          "g": 42,
+          "b": 70
+        },
+        "alpha": 0.30
+      },
+      {
+        "minutes": 360,
+        "color": {
+          "r": 255,
+          "g": 214,
+          "b": 170
+        },
+        "alpha": 0.16
+      },
+      {
+        "minutes": 720,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "alpha": 0.04
+      },
+      {
+        "minutes": 1080,
+        "color": {
+          "r": 255,
+          "g": 188,
+          "b": 140
+        },
+        "alpha": 0.14
+      },
+      {
+        "minutes": 1320,
+        "color": {
+          "r": 42,
+          "g": 50,
+          "b": 86
+        },
+        "alpha": 0.32
+      }
     ]
   },
   "npcs": {
@@ -124,7 +229,11 @@
         "spawnObjectName": "",
         "fallbackX": 520.0,
         "fallbackY": 402.0,
-        "spriteSheetAssetName": "Person2",
+        "spriteSheetAssetName": "ShopClerk",
+        "frameWidth": 32,
+        "frameHeight": 64,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 0,
         "targetHeightInPixels": 24,
         "interactionRange": 22.0,
         "dialogueLines": [
@@ -191,9 +300,18 @@
       "Starter Pickaxe"
     ],
     "startingSkills": [
-      { "name": "Foraging", "level": 1 },
-      { "name": "Crafting", "level": 1 },
-      { "name": "Negotiation", "level": 1 }
+      {
+        "name": "Foraging",
+        "level": 1
+      },
+      {
+        "name": "Crafting",
+        "level": 1
+      },
+      {
+        "name": "Negotiation",
+        "level": 1
+      }
     ],
     "startingLore": [
       "The settlement was rebuilt after the Silent Storm.",

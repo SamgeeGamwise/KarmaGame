@@ -5,39 +5,28 @@ using MonoGame.Extended;
 
 namespace Engine.Core;
 
-public readonly struct EngineFrameContext
+public readonly struct EngineFrameContext(
+    GameTime gameTime,
+    ContentManager content,
+    SpriteBatch spriteBatch,
+    OrthographicCamera camera,
+    InputBridge input,
+    int virtualWidth,
+    int virtualHeight)
 {
-    public EngineFrameContext(
-        GameTime gameTime,
-        ContentManager content,
-        SpriteBatch spriteBatch,
-        OrthographicCamera camera,
-        InputBridge input,
-        int virtualWidth,
-        int virtualHeight)
-    {
-        GameTime = gameTime;
-        Content = content;
-        SpriteBatch = spriteBatch;
-        Camera = camera;
-        Input = input;
-        VirtualWidth = virtualWidth;
-        VirtualHeight = virtualHeight;
-    }
+    public GameTime GameTime { get; } = gameTime;
 
-    public GameTime GameTime { get; }
+    public ContentManager Content { get; } = content;
 
-    public ContentManager Content { get; }
+    public SpriteBatch SpriteBatch { get; } = spriteBatch;
 
-    public SpriteBatch SpriteBatch { get; }
+    public OrthographicCamera Camera { get; } = camera;
 
-    public OrthographicCamera Camera { get; }
+    public InputBridge Input { get; } = input;
 
-    public InputBridge Input { get; }
+    public int VirtualWidth { get; } = virtualWidth;
 
-    public int VirtualWidth { get; }
-
-    public int VirtualHeight { get; }
+    public int VirtualHeight { get; } = virtualHeight;
 
     public float DeltaSeconds => (float)GameTime.ElapsedGameTime.TotalSeconds;
 }

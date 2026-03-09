@@ -7,23 +7,16 @@ using Sandbox.Game.Config;
 
 namespace Sandbox.Game;
 
-internal sealed class DayNightNode
+internal sealed class DayNightNode(DayNightSettings settings)
 {
-    private readonly DayNightSettings _settings;
-    private readonly TintKeyframe[] _tintTimeline;
-    private Texture2D _pixel = null!;
-    private SpriteFont _clockFont = null!;
-    private int _currentMinutes;
-    private float _tickTimer;
-
-    public DayNightNode(DayNightSettings settings)
-    {
-        _settings = settings;
-        _currentMinutes = settings.StartMinutes;
-        _tintTimeline = settings.TintTimeline
+    private readonly DayNightSettings _settings = settings;
+    private readonly TintKeyframe[] _tintTimeline = settings.TintTimeline
             .Select(t => new TintKeyframe(t.Minutes, t.Color.ToColor(), t.Alpha))
             .ToArray();
-    }
+    private Texture2D _pixel = null!;
+    private SpriteFont _clockFont = null!;
+    private int _currentMinutes = settings.StartMinutes;
+    private float _tickTimer;
 
     public int CurrentMinutes => _currentMinutes;
 

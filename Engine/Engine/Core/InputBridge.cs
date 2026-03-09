@@ -10,6 +10,8 @@ public sealed class InputBridge
     private readonly Dictionary<string, bool> _down = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _pressed = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _released = new(StringComparer.Ordinal);
+    private bool _scrollUp = false;
+    private bool _scrollDown = false;
 
     public void BindKey(string action, Keys key)
     {
@@ -29,6 +31,10 @@ public sealed class InputBridge
 
     public bool Released(string action) => _released.TryGetValue(action, out bool value) && value;
 
+    public bool ScrollingUp => _scrollUp;
+
+    public bool ScrollingDown => _scrollDown;
+
     public Vector2 Vector(string leftAction, string rightAction, string upAction, string downAction)
     {
         float x = Axis(leftAction, rightAction);
@@ -37,7 +43,7 @@ public sealed class InputBridge
         return v == Vector2.Zero ? v : Vector2.Normalize(v);
     }
 
-    internal void Update(KeyboardState current, KeyboardState previous)
+    internal void Update(KeyboardState currentKeyboard, KeyboardState previousKeyboard, MouseState currentMouse, MouseState previousMouse)
     {
         foreach ((string action, List<Keys> keys) in _keysByAction)
         {
@@ -46,14 +52,17 @@ public sealed class InputBridge
 
             foreach (Keys key in keys)
             {
-                isDown |= current.IsKeyDown(key);
-                wasDown |= previous.IsKeyDown(key);
+                isDown |= currentKeyboard.IsKeyDown(key);
+                wasDown |= previousKeyboard.IsKeyDown(key);
             }
 
             _down[action] = isDown;
             _pressed[action] = isDown && !wasDown;
             _released[action] = !isDown && wasDown;
         }
+
+        _scrollUp = currentMouse.ScrollWheelValue > previousMouse.ScrollWheelValue;
+        _scrollDown = currentMouse.ScrollWheelValue < previousMouse.ScrollWheelValue;
     }
 
     private float Axis(string negativeAction, string positiveAction)

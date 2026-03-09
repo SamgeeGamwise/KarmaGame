@@ -158,6 +158,11 @@
 /processorParam:TextureFormat=Color
 /build:FieldsTileset.png
 
+#begin HouseInterior.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:HouseInterior.tmx
+
 #begin OldMan/D_Idle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -290,6 +295,18 @@
 /processorParam:TextureFormat=Color
 /build:Person2.png
 
+#begin ShopClerk.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ShopClerk.png
+
 #begin Tileset2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -307,13 +324,10 @@
 /processor:TiledMapProcessor
 /build:Town.tmx
 
-#begin HouseInterior.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:HouseInterior.tmx
-
 #begin UIFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
 /build:UIFont.spritefont
 

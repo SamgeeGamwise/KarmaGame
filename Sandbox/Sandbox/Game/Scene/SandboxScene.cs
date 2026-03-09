@@ -48,7 +48,7 @@ internal sealed class SandboxScene
         _economySettings = settings.Economy;
         _sleepSettings = settings.Sleep;
         _mapProfile = mapProfile;
-        _cameraNode = new CameraNode(_sceneSettings.CameraZoom);
+        _cameraNode = new CameraNode(settings.Camera, _sceneSettings.CameraZoom);
         _activeMapAssetName = _sceneSettings.StartingMapAssetName;
         _isPortalDebugOverlayEnabled = _sceneSettings.DrawPortalDebugOverlay;
         _portals = BuildPortals(_sceneSettings);
