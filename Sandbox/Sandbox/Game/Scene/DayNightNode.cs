@@ -14,7 +14,6 @@ internal sealed class DayNightNode(DayNightSettings settings)
             .Select(t => new TintKeyframe(t.Minutes, t.Color.ToColor(), t.Alpha))
             .ToArray();
     private Texture2D _pixel = null!;
-    private SpriteFont _clockFont = null!;
     private int _currentMinutes = settings.StartMinutes;
     private float _tickTimer;
 
@@ -24,7 +23,6 @@ internal sealed class DayNightNode(DayNightSettings settings)
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
-        _clockFont = content.Load<SpriteFont>("UIFont");
         _pixel = new Texture2D(graphicsDevice, 1, 1);
         _pixel.SetData([Color.White]);
     }
@@ -59,26 +57,10 @@ internal sealed class DayNightNode(DayNightSettings settings)
         return _currentMinutes >= startMinutes || _currentMinutes <= endMinutes;
     }
 
-    public void DrawScreen(SpriteBatch spriteBatch, int _virtualWidth, int _virtualHeight)
+    public void DrawScreen(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
     {
-        Viewport viewport = spriteBatch.GraphicsDevice.Viewport;
-        int screenWidth = viewport.Width;
-        int screenHeight = viewport.Height;
-
         TintSample tint = ComputeTint(_currentMinutes);
         spriteBatch.Draw(_pixel, new Rectangle(0, 0, screenWidth, screenHeight), tint.Color * tint.Alpha);
-
-        string clockText = FormatClock(_currentMinutes);
-        Vector2 textSize = _clockFont.MeasureString(clockText);
-        int panelPadding = _settings.ClockPanelPadding;
-        Rectangle panelRect = new(
-            screenWidth - (int)textSize.X - panelPadding * 2 - 16,
-            16,
-            (int)textSize.X + panelPadding * 2,
-            (int)textSize.Y + panelPadding * 2);
-
-        spriteBatch.Draw(_pixel, panelRect, Color.Black * 0.45f);
-        spriteBatch.DrawString(_clockFont, clockText, new Vector2(panelRect.X + panelPadding, panelRect.Y + panelPadding), Color.White);
     }
 
     private TintSample ComputeTint(int minutes)

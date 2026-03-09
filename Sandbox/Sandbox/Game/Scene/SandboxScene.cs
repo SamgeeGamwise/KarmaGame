@@ -29,7 +29,8 @@ internal sealed class SandboxScene
     private readonly MenuOverlayNode _menuOverlayNode;
     private readonly DialogueNode _dialogueNode = new();
     private readonly NotificationFeedNode _notificationFeedNode;
-    private readonly HudNode _hudNode = new();
+    private readonly HudNode _hudNode;
+    private readonly IReadOnlyDictionary<string, string> _keysByAction;
     private readonly PlayerProgressState _progressState;
     private readonly BuildingDirectory _buildingDirectory;
     private readonly YSortRenderer _ySortRenderer = new();
@@ -55,8 +56,14 @@ internal sealed class SandboxScene
         _playerNode = new PlayerNode(settings.Player);
         _dayNightNode = new DayNightNode(settings.DayNight);
         _npcRosterNode = new NpcRosterNode(settings.Npcs, settings.Interaction);
-        _menuOverlayNode = new MenuOverlayNode(settings.Menu);
+        _keysByAction = BuildInputKeyMap(settings.Input);
+        _menuOverlayNode = new MenuOverlayNode(settings.Menu, _keysByAction);
         _notificationFeedNode = new NotificationFeedNode(settings.Interaction.NotificationDurationSeconds);
+        _hudNode = new HudNode(
+            _keysByAction,
+            _menuSettings.ToggleInputActionName,
+            _sceneSettings.ActionInputActionName,
+            _economySettings.DebugAddMoneyActionName);
         _progressState = PlayerProgressState.Create(settings.Progression, settings.Economy);
         _buildingDirectory = new BuildingDirectory(_sceneSettings.Buildings);
     }
@@ -180,21 +187,25 @@ internal sealed class SandboxScene
     public void DrawScreen(EngineFrameContext context)
     {
         context.SpriteBatch.Begin();
-        _dayNightNode.DrawScreen(context.SpriteBatch, context.VirtualWidth, context.VirtualHeight);
+        Viewport viewport = context.SpriteBatch.GraphicsDevice.Viewport;
+        int screenWidth = viewport.Width;
+        int screenHeight = viewport.Height;
+
+        _dayNightNode.DrawScreen(context.SpriteBatch, screenWidth, screenHeight);
         _hudNode.DrawScreen(
             context.SpriteBatch,
-            context.VirtualWidth,
+            screenWidth,
             _progressState.DayNumber,
             _dayNightNode.CurrentClockText,
             _progressState.Money,
             _progressState.Level,
             !_menuOverlayNode.IsOpen);
         _notificationFeedNode.DrawScreen(context.SpriteBatch);
-        _dialogueNode.DrawScreen(context.SpriteBatch, context.VirtualWidth, context.VirtualHeight);
+        _dialogueNode.DrawScreen(context.SpriteBatch, screenWidth, screenHeight);
         _menuOverlayNode.DrawScreen(
             context.SpriteBatch,
-            context.VirtualWidth,
-            context.VirtualHeight,
+            screenWidth,
+            screenHeight,
             _progressState,
             _buildingDirectory.Buildings,
             _activeMapAssetName);
@@ -421,6 +432,49 @@ internal sealed class SandboxScene
         }
 
         return false;
+    }
+
+    private static IReadOnlyDictionary<string, string> BuildInputKeyMap(InputSettings inputSettings)
+    {
+        var result = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (InputBindingSettings binding in inputSettings.Bindings)
+        {
+            if (string.IsNullOrWhiteSpace(binding.Action) || string.IsNullOrWhiteSpace(binding.Key))
+                continue;
+
+            string keyLabel = FormatKeyLabel(binding.Key);
+            if (!result.TryGetValue(binding.Action, out string? existing))
+            {
+                result[binding.Action] = keyLabel;
+                continue;
+            }
+
+            if (existing.IndexOf(keyLabel, StringComparison.OrdinalIgnoreCase) >= 0)
+                continue;
+
+            result[binding.Action] = $"{existing}/{keyLabel}";
+        }
+
+        return result;
+    }
+
+    private static string FormatKeyLabel(string rawKey)
+    {
+        return rawKey.Trim() switch
+        {
+            "LeftShift" => "Shift",
+            "RightShift" => "Shift",
+            "LeftControl" => "Ctrl",
+            "RightControl" => "Ctrl",
+            "LeftAlt" => "Alt",
+            "RightAlt" => "Alt",
+            "Back" => "Backspace",
+            "Return" => "Enter",
+            "OemQuestion" => "?",
+            "OemComma" => ",",
+            "OemPeriod" => ".",
+            _ => rawKey.Trim()
+        };
     }
 
     private readonly record struct ScenePortal(

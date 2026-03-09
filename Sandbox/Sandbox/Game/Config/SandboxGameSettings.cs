@@ -9,6 +9,8 @@ internal sealed class SandboxGameSettings
 
     public RenderSettings Render { get; set; } = RenderSettings.CreateDefault();
 
+    public DebugSettings Debug { get; set; } = DebugSettings.CreateDefault();
+
     public InputSettings Input { get; set; } = InputSettings.CreateDefault();
 
     public SceneSettings Scene { get; set; } = SceneSettings.CreateDefault();
@@ -56,6 +58,13 @@ internal sealed class RenderSettings
     public static RenderSettings CreateDefault() => new();
 }
 
+internal sealed class DebugSettings
+{
+    public bool SkipMainMenu { get; set; } = false;
+
+    public static DebugSettings CreateDefault() => new();
+}
+
 internal sealed class InputSettings
 {
     public List<InputBindingSettings> Bindings { get; set; } =
@@ -68,10 +77,12 @@ internal sealed class InputSettings
         new("action", "E"),
         new("toggle_debug", "F3"),
         new("menu_toggle", "Tab"),
-        new("menu_next", "Down"),
-        new("menu_previous", "Up"),
+        new("menu_next", "S"),
+        new("menu_next", "D"),
+        new("menu_previous", "W"),
+        new("menu_previous", "A"),
         new("menu_confirm", "Enter"),
-        new("menu_back", "Back"),
+        new("menu_back", "Escape"),
         new("debug_add_money", "F6"),
         new("exit", "Escape")
     ];
@@ -89,7 +100,7 @@ internal sealed class SceneSettings
 
     public string DebugToggleInputActionName { get; set; } = "toggle_debug";
 
-    public float CameraZoom { get; set; } = 1.25f;
+    public float CameraZoom { get; set; } = 1.5f;
 
     public float PortalTransitionCooldownSeconds { get; set; } = 0.35f;
 
@@ -150,9 +161,9 @@ internal sealed class PlayerSettings
 
     public float WalkFramesPerSecond { get; set; } = 8f;
 
-    public float MoveSpeed { get; set; } = 92f;
+    public float MoveSpeed { get; set; } = 50f;
 
-    public float RunSpeed { get; set; } = 150f;
+    public float RunSpeed { get; set; } = 75f;
 
     public int CollisionWidth { get; set; } = 10;
 
@@ -169,7 +180,7 @@ internal sealed class PlayerSettings
 
 internal sealed class CameraSettings
 {
-    public float ZoomSpeed { get; set; } = 0.5f;
+    public float ZoomSpeed { get; set; } = 0.25f;
 
     public static CameraSettings CreateDefault() => new();
 }
@@ -180,7 +191,7 @@ internal sealed class DayNightSettings
 
     public int StartMinutes { get; set; } = 6 * 60;
 
-    public int MinutesPerTick { get; set; } = 30;
+    public int MinutesPerTick { get; set; } = 360;
 
     public float SecondsPerTick { get; set; } = 5f;
 
@@ -211,13 +222,19 @@ internal sealed class NpcSystemSettings
             string.Empty,
             520f,
             402f,
-            "Person2",
+            "ShopClerk",
             24,
             22f,
             [
                 "Morning. Keep your coin purse close.",
                 "Placeholder quest hooks will live here."
-            ]),
+            ])
+        {
+            FrameWidth = 32,
+            FrameHeight = 64,
+            SourceOffsetX = 0,
+            SourceOffsetY = 0
+        },
         new(
             "npc_farmer",
             "Field Farmer",
