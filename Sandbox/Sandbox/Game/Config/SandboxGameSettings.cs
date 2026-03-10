@@ -48,7 +48,16 @@ internal sealed class WindowSettings
 
     public bool AllowUserResizing { get; set; } = true;
 
+    public DisplayMode StartDisplayMode { get; set; } = DisplayMode.Fullscreen;
+
     public static WindowSettings CreateDefault() => new();
+}
+
+internal enum DisplayMode
+{
+    Windowed,
+    Fullscreen,
+    Borderless
 }
 
 internal sealed class RenderSettings
