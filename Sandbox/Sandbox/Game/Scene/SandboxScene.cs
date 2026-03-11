@@ -19,6 +19,7 @@ internal sealed class SandboxScene
     private readonly InteractionSettings _interactionSettings;
     private readonly MenuSettings _menuSettings;
     private readonly EconomySettings _economySettings;
+    private readonly DebugSettings _debugSettings;
     private readonly SleepSettings _sleepSettings;
     private readonly TiledMapAuthoringProfile _mapProfile;
     private readonly Dictionary<string, MapNode> _maps = new(StringComparer.Ordinal);
@@ -47,11 +48,12 @@ internal sealed class SandboxScene
         _interactionSettings = settings.Interaction;
         _menuSettings = settings.Menu;
         _economySettings = settings.Economy;
+        _debugSettings = settings.Debug;
         _sleepSettings = settings.Sleep;
         _mapProfile = mapProfile;
         _cameraNode = new CameraNode(settings.Camera, _sceneSettings.CameraZoom);
         _activeMapAssetName = _sceneSettings.StartingMapAssetName;
-        _isPortalDebugOverlayEnabled = _sceneSettings.DrawPortalDebugOverlay;
+        _isPortalDebugOverlayEnabled = settings.Debug.StartWithDebugLinesOn;
         _portals = BuildPortals(_sceneSettings);
         _playerNode = new PlayerNode(settings.Player);
         _dayNightNode = new DayNightNode(settings.DayNight);
@@ -63,7 +65,7 @@ internal sealed class SandboxScene
             _keysByAction,
             _menuSettings.ToggleInputActionName,
             _sceneSettings.ActionInputActionName,
-            _economySettings.DebugAddMoneyActionName);
+            _debugSettings.AddMoneyInputActionName);
         _progressState = PlayerProgressState.Create(settings.Progression, settings.Economy);
         _buildingDirectory = new BuildingDirectory(_sceneSettings.Buildings);
     }
@@ -134,11 +136,11 @@ internal sealed class SandboxScene
             _playerNode.Update(context, ActiveMap);
 
         if (!pauseWorld &&
-            !string.IsNullOrWhiteSpace(_economySettings.DebugAddMoneyActionName) &&
-            context.Input.Pressed(_economySettings.DebugAddMoneyActionName))
+            !string.IsNullOrWhiteSpace(_debugSettings.AddMoneyInputActionName) &&
+            context.Input.Pressed(_debugSettings.AddMoneyInputActionName))
         {
-            _progressState.AddMoney(_economySettings.DebugAddMoneyAmount);
-            _notificationFeedNode.Push($"+${_economySettings.DebugAddMoneyAmount} debug money");
+            _progressState.AddMoney(_debugSettings.AddMoneyAmount);
+            _notificationFeedNode.Push($"+${_debugSettings.AddMoneyAmount} debug money");
         }
 
         if (!pauseWorld && context.Input.Pressed(_sceneSettings.ActionInputActionName))
@@ -259,8 +261,8 @@ internal sealed class SandboxScene
 
     private void HandleGlobalInputs(EngineFrameContext context, Action exitGame)
     {
-        if (!string.IsNullOrWhiteSpace(_sceneSettings.DebugToggleInputActionName) &&
-            context.Input.Pressed(_sceneSettings.DebugToggleInputActionName))
+        if (!string.IsNullOrWhiteSpace(_debugSettings.ToggleDebugLinesInputActionName) &&
+            context.Input.Pressed(_debugSettings.ToggleDebugLinesInputActionName))
         {
             _isPortalDebugOverlayEnabled = !_isPortalDebugOverlayEnabled;
             _notificationFeedNode.Push(_isPortalDebugOverlayEnabled ? "Portal debug enabled" : "Portal debug disabled");
