@@ -1,1 +1,0 @@
-# Item Assets\nPlace item icons and placeholder pickup sprites here.\n

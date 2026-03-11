@@ -1,1 +1,0 @@
-# Lore Assets\nPlace codex illustration assets and text data files here.\n

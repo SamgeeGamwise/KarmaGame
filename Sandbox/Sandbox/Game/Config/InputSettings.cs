@@ -13,6 +13,7 @@ internal sealed class InputSettings
         new("run", "LeftShift"),
         new("action", "E"),
         new(DebugSettings.ToggleDebugLinesActionName, "F3"),
+        new(DebugSettings.TogglePlayerDebugActionName, "F4"),
         new("menu_toggle", "Tab"),
         new("menu_next", "S"),
         new("menu_next", "D"),

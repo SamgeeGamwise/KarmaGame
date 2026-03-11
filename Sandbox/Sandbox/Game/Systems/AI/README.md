@@ -1,1 +1,0 @@
-# AI\nPlaceholder for behavior trees, schedules, and pathfinding.\n

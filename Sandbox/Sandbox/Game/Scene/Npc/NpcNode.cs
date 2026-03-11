@@ -67,7 +67,7 @@ internal sealed class NpcNode : IYSortDrawable
 
     public Vector2 Position { get; private set; }
 
-    public float YSort => Position.Y + _scaledFrameHeight;
+    public float YSort => FeetPosition.Y;
 
     public Vector2 FeetPosition => new(Position.X + _scaledFrameWidth * 0.5f, Position.Y + _scaledFrameHeight - _feetBottomInset);
 

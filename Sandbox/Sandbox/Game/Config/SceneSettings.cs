@@ -4,7 +4,7 @@ namespace Sandbox.Game.Config;
 
 internal sealed class SceneSettings
 {
-    public string StartingMapAssetName { get; set; } = "GameMap";
+    public string StartingMapAssetName { get; set; } = "Maps/GameMap";
 
     public string ActionInputActionName { get; set; } = "action";
 
@@ -20,8 +20,8 @@ internal sealed class SceneSettings
 
     public List<PortalSettings> Portals { get; set; } =
     [
-        new("GameMap", "DoorToHospital", "HospitalInterior", "HospitalFromTown"),
-        new("HospitalInterior", "DoorToTown", "GameMap", "TownFromHospital")
+        new("Maps/GameMap", "DoorToHospital", "Maps/HospitalInterior", "HospitalFromTown"),
+        new("Maps/HospitalInterior", "DoorToTown", "Maps/GameMap", "TownFromHospital")
     ];
 
     public List<BuildingSettings> Buildings { get; set; } =
@@ -29,9 +29,9 @@ internal sealed class SceneSettings
         new(
             "home",
             "Player Home",
-            "Town",
+            "Maps/GameMap",
             "DoorToHouse",
-            "HouseInterior",
+            "Maps/HospitalInterior",
             "HouseFromTown",
             "DoorToTown",
             "TownFromHouse",
@@ -39,9 +39,9 @@ internal sealed class SceneSettings
         new(
             "blacksmith",
             "Placeholder Blacksmith",
-            "Town",
+            "Maps/GameMap",
             "DoorToBlacksmith",
-            "HouseInterior",
+            "Maps/HospitalInterior",
             "HouseFromTown",
             "DoorToTown",
             "TownFromBlacksmith",
@@ -49,9 +49,9 @@ internal sealed class SceneSettings
         new(
             "library",
             "Placeholder Library",
-            "Town",
+            "Maps/GameMap",
             "DoorToLibrary",
-            "HouseInterior",
+            "Maps/HospitalInterior",
             "HouseFromTown",
             "DoorToTown",
             "TownFromLibrary",

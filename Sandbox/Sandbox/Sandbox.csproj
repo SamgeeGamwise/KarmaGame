@@ -41,4 +41,17 @@
   <ItemGroup>
     <None Include="Game\Content\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Items\" />
+    <Folder Include="Content\Lore\" />
+    <Folder Include="Content\Maps\Interiors\" />
+    <Folder Include="Game\Systems\AI\" />
+    <Folder Include="Game\Systems\Buildings\" />
+    <Folder Include="Game\Systems\Economy\" />
+    <Folder Include="Game\Systems\Inventory\" />
+    <Folder Include="Game\Systems\Lore\" />
+    <Folder Include="Game\Systems\Quests\" />
+    <Folder Include="Game\Systems\Skills\" />
+    <Folder Include="Game\Systems\Time\" />
+  </ItemGroup>
 </Project>

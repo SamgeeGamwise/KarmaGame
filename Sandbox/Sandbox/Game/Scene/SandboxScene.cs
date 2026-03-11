@@ -39,7 +39,8 @@ internal sealed class SandboxScene
 
     private string _activeMapAssetName;
     private float _portalCooldownSeconds;
-    private bool _isPortalDebugOverlayEnabled;
+    private bool _isWorldDebugOverlayEnabled;
+    private bool _isPlayerDebugOverlayEnabled;
     private Texture2D _debugPixel = null!;
 
     public SandboxScene(SandboxGameSettings settings, TiledMapAuthoringProfile mapProfile)
@@ -53,7 +54,7 @@ internal sealed class SandboxScene
         _mapProfile = mapProfile;
         _cameraNode = new CameraNode(settings.Camera, _sceneSettings.CameraZoom);
         _activeMapAssetName = _sceneSettings.StartingMapAssetName;
-        _isPortalDebugOverlayEnabled = settings.Debug.StartWithDebugLinesOn;
+        _isWorldDebugOverlayEnabled = settings.Debug.StartWithDebugLinesOn;
         _portals = BuildPortals(_sceneSettings);
         _playerNode = new PlayerNode(settings.Player);
         _dayNightNode = new DayNightNode(settings.DayNight);
@@ -179,9 +180,12 @@ internal sealed class SandboxScene
             _ySortRenderer.Add(overhang);
         foreach (NpcNode npc in _npcRosterNode.GetNpcsForMap(_activeMapAssetName))
             _ySortRenderer.Add(npc);
-        _ySortRenderer.Add(_playerNode);
+        float playerYSort = _playerNode.YSort;
+        if (ActiveMap.TryResolveOcclusionSort(_playerNode.OcclusionBounds, out float occludedSortY))
+            playerYSort = Math.Min(playerYSort, occludedSortY);
+        _ySortRenderer.Add(_playerNode, playerYSort);
         _ySortRenderer.Draw(context.SpriteBatch);
-        DrawPortalDebug(context.SpriteBatch);
+        DrawWorldDebugOverlay(context.SpriteBatch);
         context.SpriteBatch.End();
 
         ActiveMap.DrawForeground(view);
@@ -264,8 +268,15 @@ internal sealed class SandboxScene
         if (!string.IsNullOrWhiteSpace(_debugSettings.ToggleDebugLinesInputActionName) &&
             context.Input.Pressed(_debugSettings.ToggleDebugLinesInputActionName))
         {
-            _isPortalDebugOverlayEnabled = !_isPortalDebugOverlayEnabled;
-            _notificationFeedNode.Push(_isPortalDebugOverlayEnabled ? "Portal debug enabled" : "Portal debug disabled");
+            _isWorldDebugOverlayEnabled = !_isWorldDebugOverlayEnabled;
+            _notificationFeedNode.Push(_isWorldDebugOverlayEnabled ? "Debug overlay enabled" : "Debug overlay disabled");
+        }
+
+        if (!string.IsNullOrWhiteSpace(_debugSettings.TogglePlayerDebugInputActionName) &&
+            context.Input.Pressed(_debugSettings.TogglePlayerDebugInputActionName))
+        {
+            _isPlayerDebugOverlayEnabled = !_isPlayerDebugOverlayEnabled;
+            _notificationFeedNode.Push(_isPlayerDebugOverlayEnabled ? "Player debug enabled" : "Player debug disabled");
         }
 
         if (!string.IsNullOrWhiteSpace(_menuSettings.ToggleInputActionName) &&
@@ -486,13 +497,37 @@ internal sealed class SandboxScene
         string TargetMapAssetName,
         string TargetSpawnObjectName);
 
-    private void DrawPortalDebug(SpriteBatch spriteBatch)
+    private void DrawWorldDebugOverlay(SpriteBatch spriteBatch)
     {
-        if (!_isPortalDebugOverlayEnabled)
+        if (!_isWorldDebugOverlayEnabled)
             return;
 
+        ActiveMap.DrawCollisionDebug(
+            spriteBatch,
+            _debugPixel,
+            new Color(240, 120, 70, 58),
+            new Color(240, 120, 70, 185));
+
         Rectangle interactionBounds = _playerNode.DoorInteractionBounds;
-        DrawRectangleOutline(spriteBatch, interactionBounds, new Color(80, 200, 255, 220));
+        if (_isPlayerDebugOverlayEnabled)
+        {
+            if (_debugSettings.ShowPlayerCollisionBox)
+            {
+                Rectangle playerCollisionBounds = _playerNode.CollisionBounds;
+                spriteBatch.Draw(_debugPixel, playerCollisionBounds, new Color(80, 255, 120, 48));
+                DrawRectangleOutline(spriteBatch, playerCollisionBounds, new Color(80, 255, 120, 220));
+            }
+
+            if (_debugSettings.ShowPlayerOcclusionBox)
+            {
+                Rectangle playerOcclusionBounds = _playerNode.OcclusionBounds;
+                spriteBatch.Draw(_debugPixel, playerOcclusionBounds, new Color(255, 220, 80, 28));
+                DrawRectangleOutline(spriteBatch, playerOcclusionBounds, new Color(255, 220, 80, 180));
+            }
+
+            if (_debugSettings.ShowPlayerInteractionBox)
+                DrawRectangleOutline(spriteBatch, interactionBounds, new Color(80, 200, 255, 220));
+        }
 
         foreach (ScenePortal portal in _portals)
         {

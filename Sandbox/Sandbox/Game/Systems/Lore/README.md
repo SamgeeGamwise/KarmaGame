@@ -1,1 +1,0 @@
-# Lore\nPlaceholder for codex entries, unlock conditions, and chapter progression.\n

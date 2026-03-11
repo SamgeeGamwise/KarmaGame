@@ -18,7 +18,7 @@ internal sealed class SleepSettings
 
     public List<SleepSpotSettings> Spots { get; set; } =
     [
-        new("HouseInterior", "BedSleepSpot", 160f, 140f, 18f, "Sleep in bed")
+        new("Maps/HospitalInterior", "BedSleepSpot", 160f, 140f, 18f, "Sleep in bed")
     ];
 
     public static SleepSettings CreateDefault() => new();

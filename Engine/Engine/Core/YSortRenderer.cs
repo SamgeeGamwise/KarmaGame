@@ -19,7 +19,13 @@ public sealed class YSortRenderer
     public void Add(IYSortDrawable drawable)
     {
         ArgumentNullException.ThrowIfNull(drawable);
-        _entries.Add(new Entry(drawable, _nextSequence++));
+        Add(drawable, drawable.YSort);
+    }
+
+    public void Add(IYSortDrawable drawable, float ySort)
+    {
+        ArgumentNullException.ThrowIfNull(drawable);
+        _entries.Add(new Entry(drawable, ySort, _nextSequence++));
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -35,12 +41,12 @@ public sealed class YSortRenderer
 
     private static int CompareEntries(Entry a, Entry b)
     {
-        int yOrder = a.Drawable.YSort.CompareTo(b.Drawable.YSort);
+        int yOrder = a.YSort.CompareTo(b.YSort);
         if (yOrder != 0)
             return yOrder;
 
         return a.Sequence.CompareTo(b.Sequence);
     }
 
-    private readonly record struct Entry(IYSortDrawable Drawable, int Sequence);
+    private readonly record struct Entry(IYSortDrawable Drawable, float YSort, int Sequence);
 }

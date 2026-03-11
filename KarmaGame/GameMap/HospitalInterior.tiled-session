@@ -1,45 +1,5 @@
 {
-    "activeFile": "HospitalInterior.tmx",
-    "expandedProjectPaths": [
-        "."
-    ],
-    "file.lastUsedOpenFilter": "All Files (*)",
-    "fileStates": {
-        "GameMap.tmx": {
-            "scale": 1,
-            "selectedLayer": 1,
-            "viewCenter": {
-                "x": 2084,
-                "y": 90
-            }
-        },
-        "HospitalInterior.tmx": {
-            "expandedObjectLayers": [
-                6
-            ],
-            "scale": 0.75,
-            "selectedLayer": 2,
-            "viewCenter": {
-                "x": 1006.6666666666666,
-                "y": 589.3333333333334
-            }
-        },
-        "Modern Interior Master Tileset.tsx": {
-            "scaleInDock": 1
-        },
-        "Modern Master Tileset.tsx": {
-            "scaleInDock": 0.5,
-            "scaleInEditor": 1
-        }
-    },
+    "activeFile": "",
     "openFiles": [
-        "GameMap.tmx",
-        "HospitalInterior.tmx"
-    ],
-    "project": "HospitalInterior.tiled-project",
-    "recentFiles": [
-        "GameMap.tmx",
-        "HospitalInterior.tmx",
-        "Modern Master Tileset.tsx"
     ]
 }

@@ -1,1 +1,0 @@
-# NPC Character Art\nPlace future NPC spritesheets and portrait assets here.\n

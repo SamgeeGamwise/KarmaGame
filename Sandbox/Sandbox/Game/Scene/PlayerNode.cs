@@ -42,11 +42,15 @@ internal sealed class PlayerNode : IYSortDrawable
 
     public int CurrentFrameHeight => _scaledFrameHeight;
 
-    public float YSort => Position.Y + _scaledFrameHeight;
+    public float YSort => FeetPosition.Y;
 
     public Vector2 FeetPosition => new(
         Position.X + _scaledFrameWidth * 0.5f,
         Position.Y + _scaledFrameHeight - _settings.CollisionBottomInset);
+
+    public Rectangle CollisionBounds => BuildCollision(Position);
+
+    public Rectangle OcclusionBounds => BuildOcclusionBounds(Position);
 
     public Rectangle DoorInteractionBounds => BuildDoorInteractionBounds(FeetPosition);
 
@@ -123,12 +127,18 @@ internal sealed class PlayerNode : IYSortDrawable
         if (axisDelta == Vector2.Zero)
             return;
 
-        Vector2 candidatePosition = Position + axisDelta;
-        Rectangle candidateCollision = BuildCollision(candidatePosition);
-        if (mapNode.IsWorldRectangleBlocked(candidateCollision))
-            return;
+        Rectangle currentCollision = BuildCollision(Position);
+        GetCollisionMetrics(out int collisionInsetX, out _, out int collisionYOffset);
 
-        Position = candidatePosition;
+        if (axisDelta.X != 0f)
+        {
+            float resolvedDeltaX = mapNode.ClampHorizontalMovement(currentCollision, axisDelta.X);
+            Position = new Vector2(currentCollision.Left + resolvedDeltaX - collisionInsetX, Position.Y);
+            return;
+        }
+
+        float resolvedDeltaY = mapNode.ClampVerticalMovement(currentCollision, axisDelta.Y);
+        Position = new Vector2(Position.X, currentCollision.Top + resolvedDeltaY - collisionYOffset);
     }
 
     private static int ResolveRow(Vector2 direction)
@@ -154,14 +164,33 @@ internal sealed class PlayerNode : IYSortDrawable
 
     private Rectangle BuildCollision(Vector2 position)
     {
-        int collisionXOffset = (_scaledFrameWidth - _settings.CollisionWidth) / 2;
-        int collisionYOffset = _scaledFrameHeight - _settings.CollisionHeight - _settings.CollisionBottomInset;
+        GetCollisionMetrics(out int collisionInsetX, out int collisionWidth, out int collisionYOffset);
 
         return new Rectangle(
-            (int)MathF.Round(position.X) + collisionXOffset,
-            (int)MathF.Round(position.Y) + collisionYOffset,
-            _settings.CollisionWidth,
+            (int)MathF.Floor(position.X) + collisionInsetX,
+            (int)MathF.Floor(position.Y) + collisionYOffset,
+            collisionWidth,
             _settings.CollisionHeight);
+    }
+
+    private void GetCollisionMetrics(out int collisionInsetX, out int collisionWidth, out int collisionYOffset)
+    {
+        collisionInsetX = Math.Max(0, (int)MathF.Round(_spriteScale));
+        collisionWidth = Math.Max(1, _scaledFrameWidth - collisionInsetX * 2);
+        collisionYOffset = _scaledFrameHeight - _settings.CollisionHeight - _settings.CollisionBottomInset;
+    }
+
+    private Rectangle BuildOcclusionBounds(Vector2 position)
+    {
+        int insetX = Math.Max(2, _scaledFrameWidth / 6);
+        int width = Math.Max(1, _scaledFrameWidth - insetX * 2);
+        int height = Math.Max(1, _scaledFrameHeight - _settings.CollisionBottomInset);
+
+        return new Rectangle(
+            (int)MathF.Round(position.X) + insetX,
+            (int)MathF.Round(position.Y),
+            width,
+            height);
     }
 
     private Rectangle BuildDoorInteractionBounds(Vector2 feetPosition)

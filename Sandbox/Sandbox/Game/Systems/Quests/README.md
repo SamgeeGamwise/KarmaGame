@@ -1,1 +1,0 @@
-# Quests\nPlaceholder for quest graphs, objectives, and rewards.\n

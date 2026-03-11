@@ -12,8 +12,9 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
 {
     private const uint TiledGlobalIdentifierMask = 0x1FFF_FFFF;
 
+    private readonly List<OcclusionAnchor> _occlusionAnchors = [];
     private readonly List<IYSortDrawable> _ySortForegroundDrawables = [];
-    private Texture2D _fallbackTileset = null!;
+    private Texture2D _fallbackFloorTexture = null!;
     private TiledMapRuntime? _runtime;
 
     public string MapAssetName => mapAssetName;
@@ -22,12 +23,12 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
-        _fallbackTileset = content.Load<Texture2D>("Tileset2");
-        if (TiledMapRuntime.TryLoad(content, graphicsDevice, mapAssetName, out var mapRuntime))
-        {
-            _runtime = mapRuntime;
-            BuildYSortForegroundDrawables();
-        }
+        _fallbackFloorTexture ??= CreateFallbackFloorTexture(graphicsDevice);
+        
+        if (!TiledMapRuntime.TryLoad(content, graphicsDevice, mapAssetName, out var mapRuntime)) return;
+        
+        _runtime = mapRuntime;
+        BuildYSortForegroundDrawables();
     }
 
     public void Update(GameTime gameTime)
@@ -69,6 +70,44 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
         return _runtime.IsWorldRectangleBlocked(mapProfile.CollisionLayerName, worldRect);
     }
 
+    public float ClampHorizontalMovement(Rectangle worldRect, float deltaX)
+    {
+        if (_runtime is null)
+            return deltaX;
+
+        return _runtime.ClampHorizontalMovement(mapProfile.CollisionLayerName, worldRect, deltaX);
+    }
+
+    public float ClampVerticalMovement(Rectangle worldRect, float deltaY)
+    {
+        if (_runtime is null)
+            return deltaY;
+
+        return _runtime.ClampVerticalMovement(mapProfile.CollisionLayerName, worldRect, deltaY);
+    }
+
+    public bool TryResolveOcclusionSort(Rectangle worldRect, out float sortY)
+    {
+        sortY = default;
+        if (_runtime is null)
+            return false;
+
+        Point center = new(worldRect.Center.X, worldRect.Center.Y);
+        foreach (OcclusionAnchor anchor in _occlusionAnchors)
+        {
+            if (!anchor.Bounds.Intersects(worldRect) &&
+                !anchor.Bounds.Contains(center))
+            {
+                continue;
+            }
+
+            sortY = anchor.SortY - 1f;
+            return true;
+        }
+
+        return false;
+    }
+
     public Vector2 ClampPlayerPosition(Vector2 position, int frameWidth, int frameHeight, int viewportWidth, int viewportHeight)
     {
         if (_runtime is not null)
@@ -107,11 +146,51 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
         _runtime?.DrawLayers(mapProfile.ForegroundLayerNames, view);
     }
 
+    public void DrawCollisionDebug(SpriteBatch spriteBatch, Texture2D pixel, Color fillColor, Color outlineColor)
+    {
+        if (_runtime is null)
+            return;
+
+        if (!_runtime.TryGetTileLayer(mapProfile.CollisionLayerName, out TiledMapTileLayer? layer) || layer is null)
+            return;
+
+        int offsetX = (int)MathF.Round(layer.Offset.X);
+        int offsetY = (int)MathF.Round(layer.Offset.Y);
+        for (int y = 0; y < layer.Height; y++)
+        {
+            for (int x = 0; x < layer.Width; x++)
+            {
+                if (!layer.TryGetTile((ushort)x, (ushort)y, out TiledMapTile? tileValue) ||
+                    tileValue is null ||
+                    tileValue.Value.IsBlank)
+                {
+                    continue;
+                }
+
+                uint rawGlobalId = unchecked((uint)tileValue.Value.GlobalIdentifier);
+                uint baseGlobalId = rawGlobalId & TiledGlobalIdentifierMask;
+                if (baseGlobalId == 0)
+                    continue;
+
+                Rectangle tileRect = new(
+                    x * layer.TileWidth + offsetX,
+                    y * layer.TileHeight + offsetY,
+                    layer.TileWidth,
+                    layer.TileHeight);
+                spriteBatch.Draw(pixel, tileRect, fillColor);
+                DrawRectangleOutline(spriteBatch, pixel, tileRect, outlineColor);
+            }
+        }
+    }
+
     private void BuildYSortForegroundDrawables()
     {
+        _occlusionAnchors.Clear();
         _ySortForegroundDrawables.Clear();
         if (_runtime is null)
             return;
+
+        BuildOcclusionAnchors();
 
         foreach (string layerName in mapProfile.YSortForegroundLayerNames)
         {
@@ -152,17 +231,60 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
                 Vector2 worldPosition = new(
                     x * layer.TileWidth + layer.Offset.X,
                     y * layer.TileHeight + layer.Offset.Y);
+                Rectangle worldBounds = new(
+                    (int)MathF.Round(worldPosition.X),
+                    (int)MathF.Round(worldPosition.Y),
+                    layer.TileWidth,
+                    layer.TileHeight);
 
                 TileTransform transform = ResolveTileTransform(tile);
                 _ySortForegroundDrawables.Add(new TileLayerDrawable(
                     texture,
                     sourceRect,
                     worldPosition,
+                    ResolveTileYSort(worldBounds),
                     layer.TileWidth,
                     layer.TileHeight,
                     transform));
             }
         }
+    }
+
+    private void BuildOcclusionAnchors()
+    {
+        if (_runtime is null)
+            return;
+
+        IReadOnlyList<TiledMapRuntime.NamedRectangle> rectangles =
+            _runtime.GetObjectRectangles(mapProfile.OcclusionObjectLayerName);
+        foreach (TiledMapRuntime.NamedRectangle rectangle in rectangles)
+            _occlusionAnchors.Add(new OcclusionAnchor(rectangle.Rectangle));
+
+        _occlusionAnchors.Sort(static (a, b) =>
+        {
+            int areaOrder = a.Area.CompareTo(b.Area);
+            if (areaOrder != 0)
+                return areaOrder;
+
+            return a.Bounds.Top.CompareTo(b.Bounds.Top);
+        });
+    }
+
+    private float ResolveTileYSort(Rectangle tileWorldBounds)
+    {
+        Point tileCenter = new(tileWorldBounds.Center.X, tileWorldBounds.Center.Y);
+        foreach (OcclusionAnchor anchor in _occlusionAnchors)
+        {
+            if (!anchor.Bounds.Intersects(tileWorldBounds) &&
+                !anchor.Bounds.Contains(tileCenter))
+            {
+                continue;
+            }
+
+            return anchor.SortY;
+        }
+
+        return tileWorldBounds.Bottom;
     }
 
     private static bool TryResolveTileVisual(TiledMap map, int baseGlobalId, out Texture2D? texture, out Rectangle sourceRect)
@@ -221,11 +343,22 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
         return effects;
     }
 
+    private static void DrawRectangleOutline(SpriteBatch spriteBatch, Texture2D pixel, Rectangle rect, Color color)
+    {
+        if (rect.Width <= 0 || rect.Height <= 0)
+            return;
+
+        spriteBatch.Draw(pixel, new Rectangle(rect.Left, rect.Top, rect.Width, 1), color);
+        spriteBatch.Draw(pixel, new Rectangle(rect.Left, rect.Bottom - 1, rect.Width, 1), color);
+        spriteBatch.Draw(pixel, new Rectangle(rect.Left, rect.Top, 1, rect.Height), color);
+        spriteBatch.Draw(pixel, new Rectangle(rect.Right - 1, rect.Top, 1, rect.Height), color);
+    }
+
     private void DrawFallbackFloor(SpriteBatch spriteBatch, int virtualWidth, int virtualHeight)
     {
         const int tileSize = 32;
-        Rectangle srcA = new(0, 0, tileSize, tileSize);
-        Rectangle srcB = new(tileSize, 0, tileSize, tileSize);
+        Rectangle srcA = new(0, 0, 1, 1);
+        Rectangle srcB = new(1, 0, 1, 1);
 
         int tilesX = (virtualWidth + tileSize - 1) / tileSize;
         int tilesY = (virtualHeight + tileSize - 1) / tileSize;
@@ -235,17 +368,36 @@ internal sealed class MapNode(string mapAssetName, TiledMapAuthoringProfile mapP
             {
                 Rectangle src = ((x + y) & 1) == 0 ? srcA : srcB;
                 Rectangle dst = new(x * tileSize, y * tileSize, tileSize, tileSize);
-                spriteBatch.Draw(_fallbackTileset, dst, src, Color.White);
+                spriteBatch.Draw(_fallbackFloorTexture, dst, src, Color.White);
             }
         }
     }
 
+    private static Texture2D CreateFallbackFloorTexture(GraphicsDevice graphicsDevice)
+    {
+        var texture = new Texture2D(graphicsDevice, 2, 1);
+        texture.SetData(
+        [
+            new Color(54, 62, 72),
+            new Color(69, 78, 90)
+        ]);
+        return texture;
+    }
+
     private readonly record struct TileTransform(float Rotation, SpriteEffects Effects);
+
+    private readonly record struct OcclusionAnchor(Rectangle Bounds)
+    {
+        public int Area => Bounds.Width * Bounds.Height;
+
+        public float SortY => Bounds.Bottom;
+    }
 
     private sealed class TileLayerDrawable(
         Texture2D texture,
         Rectangle sourceRect,
         Vector2 worldPosition,
+        float ySort,
         int worldTileWidth,
         int worldTileHeight,
 MapNode.TileTransform transform) : IYSortDrawable
@@ -259,7 +411,7 @@ MapNode.TileTransform transform) : IYSortDrawable
                 worldTileHeight / (float)sourceRect.Height);
         private readonly TileTransform _transform = transform;
 
-        public float YSort { get; } = worldPosition.Y + worldTileHeight;
+        public float YSort { get; } = ySort;
 
         public void Draw(SpriteBatch spriteBatch)
         {

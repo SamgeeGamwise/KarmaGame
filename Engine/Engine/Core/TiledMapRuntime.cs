@@ -150,16 +150,26 @@ public sealed class TiledMapRuntime
         if (!TryGetNamedObject(objectLayerName, objectName, out TiledMapObject? mapObject) || mapObject is null)
             return false;
 
-        Vector2 position = mapObject.Position;
-        Vector2 size = TryGetExplicitObjectSize(mapObject, out Vector2 explicitSize)
-            ? explicitSize
-            : new Vector2(Map.TileWidth, Map.TileHeight);
-        rectangle = new Rectangle(
-            (int)MathF.Floor(position.X),
-            (int)MathF.Floor(position.Y),
-            Math.Max(1, (int)MathF.Ceiling(size.X)),
-            Math.Max(1, (int)MathF.Ceiling(size.Y)));
+        rectangle = BuildObjectRectangle(mapObject);
         return true;
+    }
+
+    public IReadOnlyList<NamedRectangle> GetObjectRectangles(string objectLayerName)
+    {
+        if (!TryGetObjectLayer(objectLayerName, out TiledMapObjectLayer? objectLayer) || objectLayer is null)
+            return [];
+
+        var rectangles = new List<NamedRectangle>(objectLayer.Objects.Length);
+        foreach (TiledMapObject mapObject in objectLayer.Objects)
+        {
+            Rectangle rectangle = BuildObjectRectangle(mapObject);
+            if (rectangle.Width <= 0 || rectangle.Height <= 0)
+                continue;
+
+            rectangles.Add(new NamedRectangle(mapObject.Name ?? string.Empty, rectangle));
+        }
+
+        return rectangles;
     }
 
     public bool IsWorldPointBlocked(string collisionLayerName, Vector2 worldPosition)
@@ -272,6 +282,113 @@ public sealed class TiledMapRuntime
         return false;
     }
 
+    public float ClampHorizontalMovement(string collisionLayerName, Rectangle worldRect, float deltaX)
+    {
+        if (deltaX == 0f || worldRect.Width <= 0 || worldRect.Height <= 0)
+            return 0f;
+
+        if (deltaX > 0f)
+        {
+            int minY = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
+            int maxY = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
+            int startTileX = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth) + 1;
+            int targetTileX = (int)MathF.Floor((worldRect.Right - 1 + deltaX) / (float)Map.TileWidth);
+
+            for (int tileX = startTileX; tileX <= targetTileX; tileX++)
+            {
+                for (int tileY = minY; tileY <= maxY; tileY++)
+                {
+                    if (!IsTileBlocked(collisionLayerName, tileX, tileY))
+                        continue;
+
+                    float blockingLeft = tileX * Map.TileWidth;
+                    return Math.Max(0f, blockingLeft - worldRect.Right);
+                }
+            }
+
+            return deltaX;
+        }
+
+        int minRow = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
+        int maxRow = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
+        int startTile = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth) - 1;
+        int targetTile = (int)MathF.Floor((worldRect.Left + deltaX) / (float)Map.TileWidth);
+
+        for (int tileX = startTile; tileX >= targetTile; tileX--)
+        {
+            for (int tileY = minRow; tileY <= maxRow; tileY++)
+            {
+                if (!IsTileBlocked(collisionLayerName, tileX, tileY))
+                    continue;
+
+                float blockingRight = (tileX + 1) * Map.TileWidth;
+                return Math.Min(0f, blockingRight - worldRect.Left);
+            }
+        }
+
+        return deltaX;
+    }
+
+    public float ClampVerticalMovement(string collisionLayerName, Rectangle worldRect, float deltaY)
+    {
+        if (deltaY == 0f || worldRect.Width <= 0 || worldRect.Height <= 0)
+            return 0f;
+
+        if (deltaY > 0f)
+        {
+            int minX = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
+            int maxX = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
+            int startTileY = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight) + 1;
+            int targetTileY = (int)MathF.Floor((worldRect.Bottom - 1 + deltaY) / (float)Map.TileHeight);
+
+            for (int tileY = startTileY; tileY <= targetTileY; tileY++)
+            {
+                for (int tileX = minX; tileX <= maxX; tileX++)
+                {
+                    if (!IsTileBlocked(collisionLayerName, tileX, tileY))
+                        continue;
+
+                    float blockingTop = tileY * Map.TileHeight;
+                    return Math.Max(0f, blockingTop - worldRect.Bottom);
+                }
+            }
+
+            return deltaY;
+        }
+
+        int minColumn = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
+        int maxColumn = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
+        int startTile = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight) - 1;
+        int targetTile = (int)MathF.Floor((worldRect.Top + deltaY) / (float)Map.TileHeight);
+
+        for (int tileY = startTile; tileY >= targetTile; tileY--)
+        {
+            for (int tileX = minColumn; tileX <= maxColumn; tileX++)
+            {
+                if (!IsTileBlocked(collisionLayerName, tileX, tileY))
+                    continue;
+
+                float blockingBottom = (tileY + 1) * Map.TileHeight;
+                return Math.Min(0f, blockingBottom - worldRect.Top);
+            }
+        }
+
+        return deltaY;
+    }
+
+    private Rectangle BuildObjectRectangle(TiledMapObject mapObject)
+    {
+        Vector2 position = mapObject.Position;
+        Vector2 size = TryGetExplicitObjectSize(mapObject, out Vector2 explicitSize)
+            ? explicitSize
+            : new Vector2(Map.TileWidth, Map.TileHeight);
+        return new Rectangle(
+            (int)MathF.Floor(position.X),
+            (int)MathF.Floor(position.Y),
+            Math.Max(1, (int)MathF.Ceiling(size.X)),
+            Math.Max(1, (int)MathF.Ceiling(size.Y)));
+    }
+
     private static bool TryGetNumericProperty(Type type, object instance, string propertyName, out float value)
     {
         value = default;
@@ -362,6 +479,8 @@ public sealed class TiledMapRuntime
         object? raw = field.GetValue(instance);
         return TryConvertToFloat(raw, out value);
     }
+
+    public readonly record struct NamedRectangle(string Name, Rectangle Rectangle);
 }
 
 

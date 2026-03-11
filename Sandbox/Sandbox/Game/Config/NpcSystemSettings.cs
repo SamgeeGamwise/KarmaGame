@@ -9,11 +9,11 @@ internal sealed class NpcSystemSettings
         new(
             "npc_guard",
             "Town Guard",
-            "Town",
+            "Maps/GameMap",
             string.Empty,
             520f,
             402f,
-            "ShopClerk",
+            "Characters/NPCs/ShopClerk",
             24,
             22f,
             [
@@ -29,11 +29,11 @@ internal sealed class NpcSystemSettings
         new(
             "npc_farmer",
             "Field Farmer",
-            "Town",
+            "Maps/GameMap",
             string.Empty,
             336f,
             270f,
-            "Person2",
+            "Characters/Person2",
             24,
             22f,
             [
@@ -43,11 +43,11 @@ internal sealed class NpcSystemSettings
         new(
             "npc_scholar",
             "Library Scholar",
-            "HouseInterior",
+            "Maps/HospitalInterior",
             string.Empty,
             176f,
             160f,
-            "Person2",
+            "Characters/Person2",
             24,
             24f,
             [
@@ -101,7 +101,7 @@ internal sealed class NpcDefinitionSettings
 
     public float FallbackY { get; set; }
 
-    public string SpriteSheetAssetName { get; set; } = "Person2";
+    public string SpriteSheetAssetName { get; set; } = "Characters/Person2";
 
     public int FrameWidth { get; set; } = 23;
 

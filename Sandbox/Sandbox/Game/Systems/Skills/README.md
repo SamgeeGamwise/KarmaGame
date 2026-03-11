@@ -1,1 +1,0 @@
-# Skills\nPlaceholder for skill progression, XP curves, and perk effects.\n

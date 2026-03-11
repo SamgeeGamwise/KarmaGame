@@ -58,7 +58,7 @@ public sealed class SandboxGame : ExtendedGameHost
     protected override void OnLoadContent()
     {
         _scene.LoadContent(Content, GraphicsDevice);
-        _menuFont = Content.Load<SpriteFont>("UIFont");
+        _menuFont = Content.Load<SpriteFont>("UI/UIFont");
         _menuPixel = new Texture2D(GraphicsDevice, 1, 1);
         _menuPixel.SetData([Color.White]);
     }

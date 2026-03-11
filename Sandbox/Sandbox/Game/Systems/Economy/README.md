@@ -1,1 +1,0 @@
-# Economy\nPlaceholder for shops, prices, transactions, and balance tuning data.\n

@@ -14,7 +14,7 @@ internal sealed class NotificationFeedNode(float defaultLifetimeSeconds)
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
-        _font = content.Load<SpriteFont>("UIFont");
+        _font = content.Load<SpriteFont>("UI/UIFont");
         _pixel = new Texture2D(graphicsDevice, 1, 1);
         _pixel.SetData([Color.White]);
     }
