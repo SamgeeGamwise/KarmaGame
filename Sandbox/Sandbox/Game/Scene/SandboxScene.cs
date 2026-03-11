@@ -168,9 +168,10 @@ internal sealed class SandboxScene
     public void Draw(EngineFrameContext context)
     {
         Matrix view = context.Camera.GetViewMatrix();
+        context.SpriteBatch.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
         ActiveMap.DrawBackground(context.SpriteBatch, view, context.VirtualWidth, context.VirtualHeight);
 
-        context.SpriteBatch.Begin(transformMatrix: view);
+        context.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: view);
         _ySortRenderer.Clear();
         foreach (IYSortDrawable overhang in ActiveMap.YSortForegroundDrawables)
             _ySortRenderer.Add(overhang);

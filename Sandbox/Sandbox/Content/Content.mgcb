@@ -163,6 +163,16 @@
 /processor:TiledMapProcessor
 /build:HouseInterior.tmx
 
+#begin GameMap.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:GameMap.tmx
+
+#begin HospitalInterior.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:HospitalInterior.tmx
+
 #begin OldMan/D_Idle.png
 /importer:TextureImporter
 /processor:TextureProcessor

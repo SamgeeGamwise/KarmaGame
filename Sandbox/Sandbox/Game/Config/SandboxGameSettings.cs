@@ -69,7 +69,7 @@ internal sealed class RenderSettings
 
 internal sealed class DebugSettings
 {
-    public bool SkipMainMenu { get; set; } = false;
+    public bool SkipMainMenu { get; set; } = true;
 
     public static DebugSettings CreateDefault() => new();
 }
@@ -101,7 +101,7 @@ internal sealed class InputSettings
 
 internal sealed class SceneSettings
 {
-    public string StartingMapAssetName { get; set; } = "Town";
+    public string StartingMapAssetName { get; set; } = "GameMap";
 
     public string ActionInputActionName { get; set; } = "action";
 
@@ -109,7 +109,7 @@ internal sealed class SceneSettings
 
     public string DebugToggleInputActionName { get; set; } = "toggle_debug";
 
-    public float CameraZoom { get; set; } = 1.5f;
+    public float CameraZoom { get; set; } = 1f;
 
     public float PortalTransitionCooldownSeconds { get; set; } = 0.35f;
 
@@ -121,8 +121,8 @@ internal sealed class SceneSettings
 
     public List<PortalSettings> Portals { get; set; } =
     [
-        new("Town", "DoorToHouse", "HouseInterior", "HouseFromTown"),
-        new("HouseInterior", "DoorToTown", "Town", "TownFromHouse")
+        new("GameMap", "DoorToHospital", "HospitalInterior", "HospitalFromTown"),
+        new("HospitalInterior", "DoorToTown", "GameMap", "TownFromHospital")
     ];
 
     public List<BuildingSettings> Buildings { get; set; } =
@@ -166,13 +166,13 @@ internal sealed class PlayerSettings
 {
     public string SpriteSheetAssetName { get; set; } = "Person2";
 
-    public int TargetHeightInPixels { get; set; } = 24;
+    public int TargetHeightInPixels { get; set; } = 64;
 
     public float WalkFramesPerSecond { get; set; } = 8f;
 
-    public float MoveSpeed { get; set; } = 50f;
+    public float MoveSpeed { get; set; } = 200f;
 
-    public float RunSpeed { get; set; } = 75f;
+    public float RunSpeed { get; set; } = 250f;
 
     public int CollisionWidth { get; set; } = 10;
 
@@ -189,7 +189,11 @@ internal sealed class PlayerSettings
 
 internal sealed class CameraSettings
 {
-    public float ZoomSpeed { get; set; } = 0.25f;
+    public float ZoomSpeed { get; set; } = 0.1f;
+
+    public float MinZoom { get; set; } = 0.8f;
+
+    public float MaxZoom { get; set; } = 1.6f;
 
     public static CameraSettings CreateDefault() => new();
 }

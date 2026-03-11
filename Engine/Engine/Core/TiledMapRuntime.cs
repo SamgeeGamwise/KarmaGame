@@ -10,10 +10,13 @@ namespace Engine.Core;
 
 public sealed class TiledMapRuntime
 {
-    private TiledMapRuntime(TiledMap map, TiledMapRenderer renderer)
+    private readonly GraphicsDevice _graphicsDevice;
+
+    private TiledMapRuntime(TiledMap map, TiledMapRenderer renderer, GraphicsDevice graphicsDevice)
     {
         Map = map;
         Renderer = renderer;
+        _graphicsDevice = graphicsDevice;
     }
 
     public TiledMap Map { get; }
@@ -30,7 +33,7 @@ public sealed class TiledMapRuntime
     {
         TiledMap map = content.Load<TiledMap>(assetName);
         var renderer = new TiledMapRenderer(graphicsDevice, map);
-        return new TiledMapRuntime(map, renderer);
+        return new TiledMapRuntime(map, renderer, graphicsDevice);
     }
 
     public static bool TryLoad(ContentManager content, GraphicsDevice graphicsDevice, string assetName, out TiledMapRuntime? runtime)
@@ -54,6 +57,7 @@ public sealed class TiledMapRuntime
 
     public void Draw(Matrix? cameraMatrix = null)
     {
+        _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
         Renderer.Draw(cameraMatrix);
     }
 
@@ -75,6 +79,7 @@ public sealed class TiledMapRuntime
             layer.IsVisible = selected.Contains(layer.Name);
         }
 
+        _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
         Renderer.Draw(cameraMatrix);
 
         foreach ((TiledMapLayer layer, bool isVisible) in previousVisibility)
