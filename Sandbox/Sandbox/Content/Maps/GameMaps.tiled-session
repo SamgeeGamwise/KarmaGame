@@ -6,18 +6,18 @@
     "fileStates": {
         "GameMap.tmx": {
             "scale": 0.75,
-            "selectedLayer": 4,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 1955.9999999999998,
-                "y": 2420.6666666666665
+                "x": 2237.333333333333,
+                "y": 2426.6666666666665
             }
         },
         "HospitalInterior.tmx": {
-            "scale": 1.1615234374999999,
-            "selectedLayer": 0,
+            "scale": 0.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 512.2582814864638,
-                "y": 512.2582814864638
+                "x": 520,
+                "y": 468
             }
         },
         "Modern Exterior Master Tileset.tsx": {
