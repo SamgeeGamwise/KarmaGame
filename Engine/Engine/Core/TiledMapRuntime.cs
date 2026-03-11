@@ -287,12 +287,15 @@ public sealed class TiledMapRuntime
         if (deltaX == 0f || worldRect.Width <= 0 || worldRect.Height <= 0)
             return 0f;
 
+        int minY = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
+        int maxY = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
+
         if (deltaX > 0f)
         {
-            int minY = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
-            int maxY = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
-            int startTileX = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth) + 1;
-            int targetTileX = (int)MathF.Floor((worldRect.Right - 1 + deltaX) / (float)Map.TileWidth);
+            float intendedRight = worldRect.Right + deltaX;
+            int startTileX = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
+            int targetTileX = (int)MathF.Floor((intendedRight - 1f) / Map.TileWidth);
+            float resolvedDelta = deltaX;
 
             for (int tileX = startTileX; tileX <= targetTileX; tileX++)
             {
@@ -302,31 +305,39 @@ public sealed class TiledMapRuntime
                         continue;
 
                     float blockingLeft = tileX * Map.TileWidth;
-                    return Math.Max(0f, blockingLeft - worldRect.Right);
+                    float tileRight = blockingLeft + Map.TileWidth;
+                    if (blockingLeft >= intendedRight || tileRight <= worldRect.Left)
+                        continue;
+
+                    resolvedDelta = Math.Min(resolvedDelta, blockingLeft - worldRect.Right);
                 }
             }
 
-            return deltaX;
+            return resolvedDelta;
         }
 
-        int minRow = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
-        int maxRow = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
-        int startTile = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth) - 1;
-        int targetTile = (int)MathF.Floor((worldRect.Left + deltaX) / (float)Map.TileWidth);
+        float intendedLeft = worldRect.Left + deltaX;
+        int startTile = (int)MathF.Floor(intendedLeft / Map.TileWidth);
+        int targetTile = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
+        float resolvedNegativeDelta = deltaX;
 
-        for (int tileX = startTile; tileX >= targetTile; tileX--)
+        for (int tileX = startTile; tileX <= targetTile; tileX++)
         {
-            for (int tileY = minRow; tileY <= maxRow; tileY++)
+            for (int tileY = minY; tileY <= maxY; tileY++)
             {
                 if (!IsTileBlocked(collisionLayerName, tileX, tileY))
                     continue;
 
+                float blockingLeft = tileX * Map.TileWidth;
                 float blockingRight = (tileX + 1) * Map.TileWidth;
-                return Math.Min(0f, blockingRight - worldRect.Left);
+                if (blockingRight <= intendedLeft || blockingLeft >= worldRect.Right)
+                    continue;
+
+                resolvedNegativeDelta = Math.Max(resolvedNegativeDelta, blockingRight - worldRect.Left);
             }
         }
 
-        return deltaX;
+        return resolvedNegativeDelta;
     }
 
     public float ClampVerticalMovement(string collisionLayerName, Rectangle worldRect, float deltaY)
@@ -334,12 +345,15 @@ public sealed class TiledMapRuntime
         if (deltaY == 0f || worldRect.Width <= 0 || worldRect.Height <= 0)
             return 0f;
 
+        int minX = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
+        int maxX = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
+
         if (deltaY > 0f)
         {
-            int minX = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
-            int maxX = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
-            int startTileY = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight) + 1;
-            int targetTileY = (int)MathF.Floor((worldRect.Bottom - 1 + deltaY) / (float)Map.TileHeight);
+            float intendedBottom = worldRect.Bottom + deltaY;
+            int startTileY = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight);
+            int targetTileY = (int)MathF.Floor((intendedBottom - 1f) / Map.TileHeight);
+            float resolvedDelta = deltaY;
 
             for (int tileY = startTileY; tileY <= targetTileY; tileY++)
             {
@@ -349,31 +363,39 @@ public sealed class TiledMapRuntime
                         continue;
 
                     float blockingTop = tileY * Map.TileHeight;
-                    return Math.Max(0f, blockingTop - worldRect.Bottom);
+                    float blockingBottom = blockingTop + Map.TileHeight;
+                    if (blockingTop >= intendedBottom || blockingBottom <= worldRect.Top)
+                        continue;
+
+                    resolvedDelta = Math.Min(resolvedDelta, blockingTop - worldRect.Bottom);
                 }
             }
 
-            return deltaY;
+            return resolvedDelta;
         }
 
-        int minColumn = (int)MathF.Floor(worldRect.Left / (float)Map.TileWidth);
-        int maxColumn = (int)MathF.Floor((worldRect.Right - 1) / (float)Map.TileWidth);
-        int startTile = (int)MathF.Floor(worldRect.Top / (float)Map.TileHeight) - 1;
-        int targetTile = (int)MathF.Floor((worldRect.Top + deltaY) / (float)Map.TileHeight);
+        float intendedTop = worldRect.Top + deltaY;
+        int startTile = (int)MathF.Floor(intendedTop / Map.TileHeight);
+        int targetTile = (int)MathF.Floor((worldRect.Bottom - 1) / (float)Map.TileHeight);
+        float resolvedNegativeDelta = deltaY;
 
-        for (int tileY = startTile; tileY >= targetTile; tileY--)
+        for (int tileY = startTile; tileY <= targetTile; tileY++)
         {
-            for (int tileX = minColumn; tileX <= maxColumn; tileX++)
+            for (int tileX = minX; tileX <= maxX; tileX++)
             {
                 if (!IsTileBlocked(collisionLayerName, tileX, tileY))
                     continue;
 
+                float blockingTop = tileY * Map.TileHeight;
                 float blockingBottom = (tileY + 1) * Map.TileHeight;
-                return Math.Min(0f, blockingBottom - worldRect.Top);
+                if (blockingBottom <= intendedTop || blockingTop >= worldRect.Bottom)
+                    continue;
+
+                resolvedNegativeDelta = Math.Max(resolvedNegativeDelta, blockingBottom - worldRect.Top);
             }
         }
 
-        return deltaY;
+        return resolvedNegativeDelta;
     }
 
     private Rectangle BuildObjectRectangle(TiledMapObject mapObject)
