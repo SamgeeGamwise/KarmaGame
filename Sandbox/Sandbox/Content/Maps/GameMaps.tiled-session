@@ -5,23 +5,30 @@
     ],
     "fileStates": {
         "GameMap.tmx": {
-            "scale": 0.25,
-            "selectedLayer": 2,
+            "expandedObjectLayers": [
+                9
+            ],
+            "scale": 1.5,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 544,
-                "y": 2416
+                "x": 3488,
+                "y": 3631.6666666666665
             }
         },
         "HospitalInterior.tmx": {
-            "scale": 1,
-            "selectedLayer": 1,
+            "scale": 1.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 332,
-                "y": 558
+                "x": 405.3333333333333,
+                "y": 488
             }
         },
         "Modern Exterior Master Tileset.tsx": {
-            "scaleInDock": 0.03125,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Modern Interior Master Tileset 32x32 part 2.tsx": {
+            "scaleInDock": 0.75,
             "scaleInEditor": 1
         },
         "Modern Interior Master Tileset.tsx": {
@@ -37,14 +44,17 @@
     "last.imagePath": "C:/Development/Code/MonoGame/KarmaGame/Sandbox/Sandbox/Content/Maps",
     "openFiles": [
         "GameMap.tmx",
-        "HospitalInterior.tmx"
+        "HospitalInterior.tmx",
+        "Modern Interior Master Tileset.tsx",
+        "Modern Interior Master Tileset 32x32 part 2.tsx"
     ],
     "project": "GameMaps.tiled-project",
     "recentFiles": [
         "GameMap.tmx",
+        "Modern Interior Master Tileset 32x32 part 2.tsx",
+        "Modern Interior Master Tileset.tsx",
         "HospitalInterior.tmx",
         "Modern Exterior Master Tileset.tsx",
-        "Modern Interior Master Tileset.tsx",
         "Modern Master Tileset.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

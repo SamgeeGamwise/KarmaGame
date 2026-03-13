@@ -1,0 +1,184 @@
+{
+  "conversations": [
+    {
+      "conversationId": "npc_shop_keeper_conversation",
+      "speakerName": "Shop Keeper",
+      "variants": [
+        {
+          "variantId": "quest_active",
+          "priority": 500,
+          "startNodeId": "start",
+          "conditions": {
+            "requiredQuestIds": [
+              "travel_errand_intro"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "You already took that errand. I am still counting on you.",
+              "responses": [
+                {
+                  "responseId": "remind_me",
+                  "text": "Remind me what I said yes to.",
+                  "nextNodeId": "reminder"
+                },
+                {
+                  "responseId": "close",
+                  "text": "I am on it.",
+                  "closeDialogue": true
+                }
+              ]
+            },
+            {
+              "nodeId": "reminder",
+              "text": "You are carrying a short travel errand for me. Check your menu if you need the wording again.",
+              "closeAfter": true
+            }
+          ]
+        },
+        {
+          "variantId": "morning_offer",
+          "priority": 300,
+          "startNodeId": "offer",
+          "conditions": {
+            "earliestMinutes": 360,
+            "latestMinutes": 719,
+            "excludedQuestIds": [
+              "travel_errand_intro"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "offer",
+              "text": "Perfect timing. I need someone to carry a travel errand before midday.",
+              "responses": [
+                {
+                  "responseId": "accept",
+                  "text": "I can take it.",
+                  "nextNodeId": "accepted",
+                  "effects": [
+                    {
+                      "effectType": "accept_quest",
+                      "value": "travel_errand_intro",
+                      "extra": "Travel Errand"
+                    }
+                  ]
+                },
+                {
+                  "responseId": "ask_why",
+                  "text": "Why the rush?",
+                  "nextNodeId": "why"
+                },
+                {
+                  "responseId": "decline",
+                  "text": "Not right now.",
+                  "nextNodeId": "declined"
+                }
+              ]
+            },
+            {
+              "nodeId": "why",
+              "text": "The route is easy early. By midday everyone else decides to travel too.",
+              "responses": [
+                {
+                  "responseId": "accept_after_why",
+                  "text": "Fine. I will take it.",
+                  "nextNodeId": "accepted",
+                  "effects": [
+                    {
+                      "effectType": "accept_quest",
+                      "value": "travel_errand_intro",
+                      "extra": "Travel Errand"
+                    }
+                  ]
+                },
+                {
+                  "responseId": "decline_after_why",
+                  "text": "Still no.",
+                  "nextNodeId": "declined"
+                }
+              ]
+            },
+            {
+              "nodeId": "accepted",
+              "text": "Good. I marked you down for it. Check your menu if you need the details again.",
+              "closeAfter": true
+            },
+            {
+              "nodeId": "declined",
+              "text": "No problem. Come back if you decide you want the work.",
+              "closeAfter": true
+            }
+          ]
+        },
+        {
+          "variantId": "day_offer",
+          "priority": 250,
+          "startNodeId": "offer",
+          "conditions": {
+            "earliestMinutes": 720,
+            "latestMinutes": 1079,
+            "excludedQuestIds": [
+              "travel_errand_intro"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "offer",
+              "text": "The roads are still clear. Want to pick up a short travel errand for me?",
+              "responses": [
+                {
+                  "responseId": "accept",
+                  "text": "Yes, give me the details.",
+                  "nextNodeId": "accepted",
+                  "effects": [
+                    {
+                      "effectType": "accept_quest",
+                      "value": "travel_errand_intro",
+                      "extra": "Travel Errand"
+                    }
+                  ]
+                },
+                {
+                  "responseId": "decline",
+                  "text": "Maybe later.",
+                  "nextNodeId": "declined"
+                }
+              ]
+            },
+            {
+              "nodeId": "accepted",
+              "text": "Good. I marked you down for it. Check your menu if you need the details again.",
+              "closeAfter": true
+            },
+            {
+              "nodeId": "declined",
+              "text": "Understood. I will ask again when the timing is better.",
+              "closeAfter": true
+            }
+          ]
+        },
+        {
+          "variantId": "late",
+          "priority": 200,
+          "startNodeId": "start",
+          "conditions": {
+            "earliestMinutes": 1080,
+            "latestMinutes": 359,
+            "excludedQuestIds": [
+              "travel_errand_intro"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Too late to start that route today. Come back tomorrow morning.",
+              "closeAfter": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -9,8 +9,12 @@ internal sealed class PlayerSettings
     public float WalkFramesPerSecond { get; set; } = 8f;
 
     public float MoveSpeed { get; set; } = 300f;
-
+    
     public float RunSpeed { get; set; } = 400f;
+    
+    // public float MoveSpeed { get; set; } = 150f;
+    //
+    // public float RunSpeed { get; set; } = 200f;
 
     public int CollisionWidth { get; set; } = 41;
 

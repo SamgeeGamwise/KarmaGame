@@ -27,17 +27,25 @@ internal sealed class DayNightNode(DayNightSettings settings)
         _pixel.SetData([Color.White]);
     }
 
-    public void Update(float deltaSeconds, bool isPaused = false)
+    public int Update(float deltaSeconds, bool isPaused = false)
     {
         if (isPaused)
-            return;
+            return 0;
 
+        int dayTransitions = 0;
         _tickTimer += deltaSeconds;
         while (_tickTimer >= _settings.SecondsPerTick)
         {
             _tickTimer -= _settings.SecondsPerTick;
-            _currentMinutes = (_currentMinutes + _settings.MinutesPerTick) % _settings.MinutesPerDay;
+            _currentMinutes += _settings.MinutesPerTick;
+            while (_currentMinutes >= _settings.MinutesPerDay)
+            {
+                _currentMinutes -= _settings.MinutesPerDay;
+                dayTransitions++;
+            }
         }
+
+        return dayTransitions;
     }
 
     public void SetCurrentMinutes(int minutes)

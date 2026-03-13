@@ -12,6 +12,7 @@ internal sealed class MenuOverlayNode
     private static readonly string[] Tabs =
     [
         "Overview",
+        "Quests",
         "Inventory",
         "Skills",
         "Lore",
@@ -174,6 +175,25 @@ internal sealed class MenuOverlayNode
                 yield break;
 
             case 1:
+                if (progression.Quests.Entries.Count == 0)
+                {
+                    yield return "No active quests yet.";
+                    yield break;
+                }
+
+                foreach (var quest in progression.Quests.Entries)
+                {
+                    yield return $"- {quest.Title}";
+                    if (!string.IsNullOrWhiteSpace(quest.SourceName))
+                        yield return $"  From: {quest.SourceName}";
+                    if (!string.IsNullOrWhiteSpace(quest.Summary))
+                        yield return $"  {quest.Summary}";
+                    yield return string.Empty;
+                }
+
+                yield break;
+
+            case 2:
                 if (progression.Inventory.Count == 0)
                 {
                     yield return "No items yet.";
@@ -184,7 +204,7 @@ internal sealed class MenuOverlayNode
                     yield return $"- {item}";
                 yield break;
 
-            case 2:
+            case 3:
                 if (progression.Skills.Count == 0)
                 {
                     yield return "No skills yet.";
@@ -195,7 +215,7 @@ internal sealed class MenuOverlayNode
                     yield return $"- {skillName}: Lv {level}";
                 yield break;
 
-            case 3:
+            case 4:
                 if (progression.LoreEntries.Count == 0)
                 {
                     yield return "No lore unlocked.";
@@ -206,7 +226,7 @@ internal sealed class MenuOverlayNode
                     yield return $"- {lore}";
                 yield break;
 
-            case 4:
+            case 5:
                 if (buildings.Count == 0)
                 {
                     yield return "No building metadata yet.";

@@ -8,19 +8,19 @@ internal sealed class NpcSystemSettings
     [
         new(
             "npc_guard",
-            "Town Guard",
+            "Crackhead",
             "Maps/GameMap",
             string.Empty,
-            520f,
-            402f,
+            2650f,
+            675f,
             "Characters/NPCs/ShopClerk",
-            24,
+            72,
             22f,
             [
-                "Morning. Keep your coin purse close.",
-                "Placeholder quest hooks will live here."
+                "Morning. Keep your coin purse close."
             ])
         {
+            DialogueConversationId = "npc_guard_conversation",
             FrameWidth = 32,
             FrameHeight = 64,
             SourceOffsetX = 0,
@@ -28,32 +28,37 @@ internal sealed class NpcSystemSettings
         },
         new(
             "npc_farmer",
-            "Field Farmer",
+            "Shop Keeper",
             "Maps/GameMap",
             string.Empty,
             336f,
-            270f,
+            1000f,
             "Characters/Person2",
-            24,
+            72,
             22f,
             [
-                "These crops are temporary, but the grind is permanent.",
-                "Someday this spot will run farming loops."
-            ]),
+                "Need anything? I am here for you!"
+            ])
+        {
+            DialogueConversationId = "npc_shop_keeper_conversation"
+        },
         new(
             "npc_scholar",
-            "Library Scholar",
+            "Doctor",
             "Maps/HospitalInterior",
             string.Empty,
-            176f,
-            160f,
+            96f,
+            96f,
             "Characters/Person2",
-            24,
+            72,
             24f,
             [
-                "This house interior is a stand-in for every building.",
-                "Lore and codex pages will connect here."
+                "Things are not looking good.",
+                "You should go in and be with her before it is too late."
             ])
+        {
+            DialogueConversationId = "npc_doctor_conversation"
+        }
     ];
 
     public static NpcSystemSettings CreateDefault() => new();
@@ -97,6 +102,8 @@ internal sealed class NpcDefinitionSettings
 
     public string SpawnObjectName { get; set; } = string.Empty;
 
+    public string DialogueConversationId { get; set; } = string.Empty;
+
     public float FallbackX { get; set; }
 
     public float FallbackY { get; set; }
@@ -118,4 +125,21 @@ internal sealed class NpcDefinitionSettings
     public float InteractionRange { get; set; } = 20f;
 
     public List<string> DialogueLines { get; set; } = [];
+
+    public NpcQuestOfferSettings? QuestOffer { get; set; }
+}
+
+internal sealed class NpcQuestOfferSettings
+{
+    public string QuestId { get; set; } = string.Empty;
+
+    public string Title { get; set; } = string.Empty;
+
+    public string OfferText { get; set; } = string.Empty;
+
+    public string AcceptedText { get; set; } = "Quest accepted.";
+
+    public string DeclinedText { get; set; } = "Maybe later.";
+
+    public string AlreadyAcceptedText { get; set; } = "You already accepted that quest.";
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Engine.Quests;
 using Sandbox.Game.Config;
 
 namespace Sandbox.Game.Scene.Progression;
@@ -10,6 +11,7 @@ internal sealed class PlayerProgressState
     private readonly Dictionary<string, int> _skills = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _inventory = [];
     private readonly List<string> _loreEntries = [];
+    private readonly HashSet<string> _flags = new(StringComparer.OrdinalIgnoreCase);
 
     private PlayerProgressState()
     {
@@ -27,12 +29,17 @@ internal sealed class PlayerProgressState
 
     public IReadOnlyList<string> LoreEntries => _loreEntries;
 
-    public static PlayerProgressState Create(ProgressionSettings progression, EconomySettings economy)
+    public IReadOnlySet<string> Flags => _flags;
+
+    public QuestLog Quests { get; } = new();
+
+    public static PlayerProgressState Create(ProgressionSettings progression, EconomySettings economy, CalendarSettings calendar)
     {
         var state = new PlayerProgressState
         {
             Level = progression.StartingLevel,
-            Money = economy.StartingMoney
+            Money = economy.StartingMoney,
+            DayNumber = Math.Max(1, calendar.StartingDayNumber)
         };
 
         foreach (string inventoryItem in progression.StartingInventory)
@@ -80,6 +87,19 @@ internal sealed class PlayerProgressState
             return;
 
         _loreEntries.Add(trimmed);
+    }
+
+    public bool HasFlag(string flagId)
+    {
+        return !string.IsNullOrWhiteSpace(flagId) && _flags.Contains(flagId.Trim());
+    }
+
+    public bool SetFlag(string flagId)
+    {
+        if (string.IsNullOrWhiteSpace(flagId))
+            return false;
+
+        return _flags.Add(flagId.Trim());
     }
 
     public void SetSkillLevel(string skillName, int level)

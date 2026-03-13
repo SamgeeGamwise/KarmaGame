@@ -21,5 +21,23 @@
     <Compile Include="Core\TiledMapAuthoringProfile.cs" />
     <Compile Include="Core\TiledMapRuntime.cs" />
     <Compile Include="Core\YSortRenderer.cs" />
+    <Compile Include="Dialogue\DialogueActionType.cs" />
+    <Compile Include="Dialogue\DialogueCatalog.cs" />
+    <Compile Include="Dialogue\DialogueCondition.cs" />
+    <Compile Include="Dialogue\DialogueConditionEvaluator.cs" />
+    <Compile Include="Dialogue\DialogueContext.cs" />
+    <Compile Include="Dialogue\DialogueConversation.cs" />
+    <Compile Include="Dialogue\DialogueEffect.cs" />
+    <Compile Include="Dialogue\DialogueNode.cs" />
+    <Compile Include="Dialogue\DialoguePage.cs" />
+    <Compile Include="Dialogue\DialogueResponse.cs" />
+    <Compile Include="Dialogue\DialogueSession.cs" />
+    <Compile Include="Dialogue\DialogueStepResult.cs" />
+    <Compile Include="Dialogue\DialogueVariant.cs" />
+    <Compile Include="Quests\QuestLog.cs" />
+    <Compile Include="Quests\QuestLogEntry.cs" />
+    <Compile Include="UI\ResponseMenu.cs" />
+    <Compile Include="UI\ResponseMenuStyle.cs" />
+    <Compile Include="UI\ResponseOption.cs" />
   </ItemGroup>
 </Project>

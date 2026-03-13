@@ -1,0 +1,72 @@
+{
+  "conversations": [
+    {
+      "conversationId": "npc_guard_conversation",
+      "speakerName": "Crackhead",
+      "variants": [
+        {
+          "variantId": "weekend_warning",
+          "priority": 300,
+          "startNodeId": "start",
+          "conditions": {
+            "allowedWeekdays": [
+              "Saturday",
+              "Sunday"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Weekend crowds get messy. Keep your coin purse close.",
+              "responses": [
+                {
+                  "responseId": "ask_for_details",
+                  "text": "What should I watch for?",
+                  "nextNodeId": "details"
+                },
+                {
+                  "responseId": "close",
+                  "text": "I will be careful.",
+                  "closeDialogue": true
+                }
+              ]
+            },
+            {
+              "nodeId": "details",
+              "text": "Pickpockets work the market edges on weekends. If the day feels crowded, trust that feeling.",
+              "closeAfter": true
+            }
+          ]
+        },
+        {
+          "variantId": "night_warning",
+          "priority": 200,
+          "startNodeId": "start",
+          "conditions": {
+            "earliestMinutes": 1080,
+            "latestMinutes": 359
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Night travel is risky. Keep your coin purse closer than usual.",
+              "closeAfter": true
+            }
+          ]
+        },
+        {
+          "variantId": "default_warning",
+          "priority": 100,
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Morning. Keep your coin purse close.",
+              "closeAfter": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

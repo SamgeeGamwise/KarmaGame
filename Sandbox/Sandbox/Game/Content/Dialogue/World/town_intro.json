@@ -1,0 +1,84 @@
+{
+  "conversations": [
+    {
+      "conversationId": "world_intro_thoughts",
+      "speakerName": "You",
+      "variants": [
+        {
+          "variantId": "night_intro",
+          "priority": 450,
+          "startNodeId": "start",
+          "conditions": {
+            "earliestMinutes": 1080,
+            "latestMinutes": 359,
+            "excludedFlags": [
+              "intro_thought_seen"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "The streets feel wrong at this hour. Time slips faster when I stand still.",
+              "responses": [
+                {
+                  "responseId": "move_on",
+                  "text": "Keep moving.",
+                  "closeDialogue": true,
+                  "effects": [
+                    {
+                      "effectType": "set_flag",
+                      "value": "intro_thought_seen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "variantId": "day_intro",
+          "priority": 400,
+          "startNodeId": "start",
+          "conditions": {
+            "earliestMinutes": 360,
+            "latestMinutes": 1079,
+            "excludedFlags": [
+              "intro_thought_seen"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Another day moving through town. If time matters here, I should start paying attention to it.",
+              "responses": [
+                {
+                  "responseId": "move_on",
+                  "text": "Keep moving.",
+                  "closeDialogue": true,
+                  "effects": [
+                    {
+                      "effectType": "set_flag",
+                      "value": "intro_thought_seen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "triggerId": "town_intro_trigger",
+      "priority": 100,
+      "mapAssetName": "Maps/GameMap",
+      "conversationId": "world_intro_thoughts",
+      "speakerName": "You",
+      "fallbackX": 240.0,
+      "fallbackY": 992.0,
+      "interactionRadius": 72.0
+    }
+  ]
+}

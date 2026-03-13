@@ -27,6 +27,7 @@ internal sealed class NpcNode : IYSortDrawable
     private readonly int _scaledFrameHeight;
     private readonly string _spriteSheetAssetName;
     private readonly List<string> _dialogueLines;
+    private readonly NpcQuestOffer? _questOffer;
     private Texture2D _sheet = null!;
 
     public NpcNode(NpcDefinitionSettings definition)
@@ -35,12 +36,27 @@ internal sealed class NpcNode : IYSortDrawable
         DisplayName = definition.DisplayName;
         MapAssetName = definition.MapAssetName;
         SpawnObjectName = definition.SpawnObjectName;
+        DialogueConversationId = definition.DialogueConversationId;
         FallbackFeetPosition = new Vector2(definition.FallbackX, definition.FallbackY);
         InteractionRange = definition.InteractionRange;
         _spriteSheetAssetName = definition.SpriteSheetAssetName;
         _dialogueLines = definition.DialogueLines.Count == 0
             ? [$"{definition.DisplayName}: placeholder dialogue."]
             : definition.DialogueLines;
+        if (definition.QuestOffer is not null && !string.IsNullOrWhiteSpace(definition.QuestOffer.QuestId))
+        {
+            _questOffer = new NpcQuestOffer(
+                definition.QuestOffer.QuestId.Trim(),
+                string.IsNullOrWhiteSpace(definition.QuestOffer.Title)
+                    ? definition.DisplayName
+                    : definition.QuestOffer.Title.Trim(),
+                string.IsNullOrWhiteSpace(definition.QuestOffer.OfferText)
+                    ? $"{definition.DisplayName} has work for you."
+                    : definition.QuestOffer.OfferText.Trim(),
+                definition.QuestOffer.AcceptedText.Trim(),
+                definition.QuestOffer.DeclinedText.Trim(),
+                definition.QuestOffer.AlreadyAcceptedText.Trim());
+        }
         _frameWidth = definition.FrameWidth > 0 ? definition.FrameWidth : DefaultFrameWidth;
         _frameHeight = definition.FrameHeight > 0 ? definition.FrameHeight : DefaultFrameHeight;
         _sourceOffsetX = definition.SourceOffsetX >= 0 ? definition.SourceOffsetX : DefaultSourceOffset;
@@ -59,17 +75,23 @@ internal sealed class NpcNode : IYSortDrawable
 
     public string SpawnObjectName { get; }
 
+    public string DialogueConversationId { get; }
+
     public Vector2 FallbackFeetPosition { get; }
 
     public float InteractionRange { get; }
 
     public IReadOnlyList<string> DialogueLines => _dialogueLines;
 
+    public NpcQuestOffer? QuestOffer => _questOffer;
+
     public Vector2 Position { get; private set; }
 
     public float YSort => FeetPosition.Y;
 
     public Vector2 FeetPosition => new(Position.X + _scaledFrameWidth * 0.5f, Position.Y + _scaledFrameHeight - _feetBottomInset);
+
+    public Rectangle OcclusionBounds => BuildOcclusionBounds(Position);
 
     public void SetFeetPosition(Vector2 feetWorldPosition)
     {
@@ -105,5 +127,18 @@ internal sealed class NpcNode : IYSortDrawable
             _spriteScale,
             SpriteEffects.None,
             0f);
+    }
+
+    private Rectangle BuildOcclusionBounds(Vector2 position)
+    {
+        int insetX = Math.Max(2, _scaledFrameWidth / 6);
+        int width = Math.Max(1, _scaledFrameWidth - insetX * 2);
+        int height = Math.Max(1, _scaledFrameHeight - _feetBottomInset);
+
+        return new Rectangle(
+            (int)MathF.Round(position.X) + insetX,
+            (int)MathF.Round(position.Y),
+            width,
+            height);
     }
 }

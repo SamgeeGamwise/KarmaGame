@@ -18,7 +18,11 @@ internal sealed class SandboxGameSettings
 
     public DayNightSettings DayNight { get; set; } = DayNightSettings.CreateDefault();
 
+    public CalendarSettings Calendar { get; set; } = CalendarSettings.CreateDefault();
+
     public NpcSystemSettings Npcs { get; set; } = NpcSystemSettings.CreateDefault();
+
+    public DialogueSettings Dialogue { get; set; } = new();
 
     public InteractionSettings Interaction { get; set; } = InteractionSettings.CreateDefault();
 
@@ -30,5 +34,14 @@ internal sealed class SandboxGameSettings
 
     public SleepSettings Sleep { get; set; } = SleepSettings.CreateDefault();
 
-    public static SandboxGameSettings CreateDefault() => new();
+    public static SandboxGameSettings CreateDefault()
+    {
+        var settings = new SandboxGameSettings
+        {
+            Dialogue = DialogueSettingsLoader.LoadFromContent()
+        };
+
+        DialogueSettingsValidator.Validate(settings.Dialogue, settings.Npcs);
+        return settings;
+    }
 }

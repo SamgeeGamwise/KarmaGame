@@ -33,11 +33,12 @@ internal sealed class HudNode(
         string clockText,
         int money,
         int level,
+        int acceptedQuestCount,
         bool showHintText)
     {
         const int margin = 14;
         const int leftPanelWidth = 264;
-        const int leftPanelHeight = 106;
+        const int leftPanelHeight = 128;
         Rectangle leftPanel = new(margin, margin, leftPanelWidth, leftPanelHeight);
         DrawPanel(spriteBatch, leftPanel, new Color(20, 24, 33, 238), new Color(86, 103, 132), true);
 
@@ -49,6 +50,8 @@ internal sealed class HudNode(
         spriteBatch.DrawString(_font, $"$ {money}", leftCursor, new Color(190, 232, 160));
         leftCursor.Y += 24;
         spriteBatch.DrawString(_font, $"Level {level}", leftCursor, new Color(230, 214, 170));
+        leftCursor.Y += 24;
+        spriteBatch.DrawString(_font, $"Quests {acceptedQuestCount}", leftCursor, new Color(192, 222, 182));
 
         string menuKey = ResolveKey(_menuToggleActionName);
         string interactKey = ResolveKey(_interactActionName);

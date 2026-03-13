@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Engine.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,13 +9,27 @@ namespace Sandbox.Game.Scene.UI;
 
 internal sealed class DialogueNode
 {
+    private static readonly ResponseMenuStyle ResponseMenuStyle = new(
+        new Color(66, 102, 150, 235),
+        new Color(31, 40, 55, 180),
+        new Color(247, 210, 109),
+        new Color(91, 106, 135),
+        Color.White,
+        new Color(210, 220, 235),
+        HorizontalMargin: 12,
+        ItemHeight: 32,
+        ItemGap: 8);
+
     private readonly List<string> _lines = [];
+    private readonly ResponseMenu _responseMenu = new();
     private SpriteFont _font = null!;
     private Texture2D _pixel = null!;
     private string _speaker = string.Empty;
     private int _lineIndex;
 
     public bool IsActive => _lineIndex < _lines.Count;
+
+    public bool HasResponseOptions => _responseMenu.HasOptions;
 
     public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
     {
@@ -26,6 +41,7 @@ internal sealed class DialogueNode
     public void StartDialogue(string speaker, IReadOnlyList<string> lines)
     {
         _speaker = speaker;
+        _responseMenu.Clear();
         _lines.Clear();
         foreach (string line in lines)
         {
@@ -39,9 +55,28 @@ internal sealed class DialogueNode
         _lineIndex = 0;
     }
 
+    public void ShowResponsePrompt(string speaker, string text, IReadOnlyList<ResponseOption> options)
+    {
+        _speaker = speaker;
+        _lines.Clear();
+        _lines.Add(string.IsNullOrWhiteSpace(text) ? $"{speaker}: ..." : text.Trim());
+        _lineIndex = 0;
+        _responseMenu.SetOptions(options);
+    }
+
+    public void MoveSelection(int direction)
+    {
+        _responseMenu.MoveSelection(direction);
+    }
+
+    public bool TryGetSelectedResponse(out ResponseOption responseOption)
+    {
+        return _responseMenu.TryGetSelectedOption(out responseOption);
+    }
+
     public void Advance()
     {
-        if (!IsActive)
+        if (!IsActive || HasResponseOptions)
             return;
 
         _lineIndex++;
@@ -50,6 +85,7 @@ internal sealed class DialogueNode
     public void Close()
     {
         _lineIndex = _lines.Count;
+        _responseMenu.Clear();
     }
 
     public void DrawScreen(SpriteBatch spriteBatch, int virtualWidth, int virtualHeight)
@@ -58,8 +94,8 @@ internal sealed class DialogueNode
             return;
 
         const int margin = 16;
-        const int panelHeight = 122;
         const int gap = 12;
+        int panelHeight = HasResponseOptions ? 150 : 122;
         int responseWidth = MathHelper.Clamp((int)(virtualWidth * 0.33f), 175, 300);
 
         Rectangle responseRect = new(
@@ -78,19 +114,27 @@ internal sealed class DialogueNode
         DrawPanel(spriteBatch, dialogueRect, new Color(15, 19, 27, 245), new Color(220, 184, 98), true);
 
         spriteBatch.DrawString(_font, "Response", new Vector2(responseRect.X + 12, responseRect.Y + 8), new Color(188, 204, 230));
-        spriteBatch.DrawString(_font, "Choices coming soon", new Vector2(responseRect.X + 12, responseRect.Y + 34), new Color(150, 166, 196));
-        spriteBatch.DrawString(_font, "Bottom-left reserved", new Vector2(responseRect.X + 12, responseRect.Y + 56), new Color(118, 132, 160));
+        if (HasResponseOptions)
+        {
+            _responseMenu.Draw(spriteBatch, _font, _pixel, responseRect, 34, ResponseMenuStyle);
+        }
+        else
+        {
+            spriteBatch.DrawString(_font, "Listen", new Vector2(responseRect.X + 12, responseRect.Y + 34), new Color(150, 166, 196));
+            spriteBatch.DrawString(_font, "No response needed", new Vector2(responseRect.X + 12, responseRect.Y + 56), new Color(118, 132, 160));
+        }
 
         string speakerLine = _speaker.Length == 0 ? "NPC" : _speaker;
         string wrappedText = WrapText(_lines[_lineIndex], dialogueRect.Width - 24);
         spriteBatch.DrawString(_font, speakerLine, new Vector2(dialogueRect.X + 12, dialogueRect.Y + 8), new Color(255, 230, 176));
         spriteBatch.DrawString(_font, wrappedText, new Vector2(dialogueRect.X + 12, dialogueRect.Y + 34), new Color(241, 245, 255));
 
-        Vector2 continueSize = _font.MeasureString("Press [E] to continue");
+        string footerText = HasResponseOptions ? "Use [W/S] and [E]" : "Press [E] to continue";
+        Vector2 footerSize = _font.MeasureString(footerText);
         spriteBatch.DrawString(
             _font,
-            "Press [E] to continue",
-            new Vector2(dialogueRect.Right - continueSize.X - 12, dialogueRect.Bottom - continueSize.Y - 8),
+            footerText,
+            new Vector2(dialogueRect.Right - footerSize.X - 12, dialogueRect.Bottom - footerSize.Y - 8),
             new Color(189, 199, 220));
     }
 

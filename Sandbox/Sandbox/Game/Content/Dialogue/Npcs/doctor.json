@@ -1,0 +1,61 @@
+{
+  "conversations": [
+    {
+      "conversationId": "npc_doctor_conversation",
+      "speakerName": "Doctor",
+      "variants": [
+        {
+          "variantId": "first_warning",
+          "priority": 300,
+          "startNodeId": "start",
+          "conditions": {
+            "excludedFlags": [
+              "doctor_warning_seen"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Things are not looking good.",
+              "nextNodeId": "follow_up"
+            },
+            {
+              "nodeId": "follow_up",
+              "text": "You should go in and be with her before it is too late.",
+              "responses": [
+                {
+                  "responseId": "understood",
+                  "text": "I understand.",
+                  "closeDialogue": true,
+                  "effects": [
+                    {
+                      "effectType": "set_flag",
+                      "value": "doctor_warning_seen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "variantId": "repeat_warning",
+          "priority": 200,
+          "startNodeId": "start",
+          "conditions": {
+            "requiredFlags": [
+              "doctor_warning_seen"
+            ]
+          },
+          "nodes": [
+            {
+              "nodeId": "start",
+              "text": "Go in and be with her. Time matters now.",
+              "closeAfter": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
