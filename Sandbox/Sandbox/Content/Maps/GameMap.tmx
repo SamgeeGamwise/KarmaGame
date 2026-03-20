@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="218" height="227" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="61">
  <tileset firstgid="1" source="Modern Exterior Master Tileset.tsx"/>
+ <tileset firstgid="16385" source="Modern Exterior Master Tileset part 2.tsx"/>
+ <tileset firstgid="32769" source="Modern Exterior Master Tileset part 3.tsx"/>
+ <tileset firstgid="49153" source="Modern Exterior Master Tileset part 4.tsx"/>
+ <tileset firstgid="65537" source="Modern Exterior Master Tileset part 5.tsx"/>
+ <tileset firstgid="81921" source="Modern Exterior Master Tileset part 6.tsx"/>
  <tileset firstgid="90465" source="Modern Interior Master Tileset.tsx"/>
+ <tileset firstgid="98977" source="Modern Interior Master Tileset part 2.tsx"/>
  <layer id="2" name="Ground" width="218" height="227">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

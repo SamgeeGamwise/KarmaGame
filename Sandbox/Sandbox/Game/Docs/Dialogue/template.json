@@ -1,0 +1,207 @@
+{
+  // This file is a reference template only.
+  // Do not place it under Game/Content/Dialogue, or the loader will try to use it as live content.
+  "conversations": [
+    {
+      // Unique across all dialogue files.
+      "conversationId": "npc_example_conversation",
+
+      // Default speaker for this conversation.
+      "speakerName": "Example NPC",
+
+      "variants": [
+        {
+          // Debug/organization ID.
+          "variantId": "weekday_morning_offer",
+
+          // Highest priority matching variant wins.
+          "priority": 300,
+
+          // Used only when multiple top-priority variants match.
+          "weight": 1,
+
+          // Optional override for every node in this variant.
+          "speakerName": "Example NPC",
+
+          // First node to open.
+          "startNodeId": "offer",
+
+          // All fields are optional. Omit what you do not need.
+          "conditions": {
+            // Minutes since midnight.
+            "earliestMinutes": 360,
+            "latestMinutes": 719,
+
+            // Absolute in-game day number.
+            "minDayNumber": 1,
+            "maxDayNumber": 999,
+
+            // 0.0 to 1.0.
+            "randomChance": 1.0,
+
+            // Must match configured calendar names.
+            "allowedWeekdays": [
+              "Monday",
+              "Tuesday"
+            ],
+            "allowedSeasons": [
+              "Spring",
+              "Summer"
+            ],
+
+            // Player progression requirements.
+            "requiredFlags": [
+              "met_example_npc"
+            ],
+            "excludedFlags": [
+              "example_scene_complete"
+            ],
+            "requiredQuestIds": [
+              "quest_already_started"
+            ],
+            "excludedQuestIds": [
+              "quest_not_allowed_twice"
+            ]
+          },
+
+          "nodes": [
+            {
+              "nodeId": "offer",
+
+              // Optional node-level speaker override.
+              "speakerName": "Example NPC",
+
+              "text": "I have a job for you, if the timing is right.",
+
+              // Used only when this node has no visible responses.
+              "nextNodeId": "",
+
+              // If true, this node closes when advanced.
+              "closeAfter": false,
+
+              // Optional node-level conditions.
+              "conditions": {
+                "excludedFlags": [
+                  "example_offer_hidden"
+                ]
+              },
+
+              "responses": [
+                {
+                  "responseId": "accept",
+                  "text": "I will take the job.",
+
+                  // Move to this node after picking the response.
+                  "nextNodeId": "accepted",
+
+                  // If true, closes immediately after applying effects.
+                  "closeDialogue": false,
+
+                  // Optional response-level conditions.
+                  "conditions": {
+                    "excludedQuestIds": [
+                      "example_delivery"
+                    ]
+                  },
+
+                  "effects": [
+                    {
+                      // Supported values:
+                      // accept_quest
+                      // set_flag
+                      // add_lore
+                      "effectType": "accept_quest",
+
+                      // Meaning depends on effect type.
+                      "value": "example_delivery",
+
+                      // Optional extra metadata.
+                      // For accept_quest this becomes the quest title.
+                      "extra": "Example Delivery"
+                    },
+                    {
+                      "effectType": "set_flag",
+                      "value": "accepted_example_delivery"
+                    }
+                  ]
+                },
+                {
+                  "responseId": "ask_question",
+                  "text": "What kind of job?",
+                  "nextNodeId": "details"
+                },
+                {
+                  "responseId": "decline",
+                  "text": "Not now.",
+                  "nextNodeId": "declined"
+                }
+              ]
+            },
+            {
+              "nodeId": "details",
+              "text": "A simple run across town, as long as you leave before noon.",
+              "responses": [
+                {
+                  "responseId": "accept_after_details",
+                  "text": "Fine. I am in.",
+                  "nextNodeId": "accepted",
+                  "effects": [
+                    {
+                      "effectType": "accept_quest",
+                      "value": "example_delivery",
+                      "extra": "Example Delivery"
+                    }
+                  ]
+                },
+                {
+                  "responseId": "decline_after_details",
+                  "text": "Still no.",
+                  "nextNodeId": "declined"
+                }
+              ]
+            },
+            {
+              "nodeId": "accepted",
+              "text": "Good. Check your menu if you need the task again.",
+              "closeAfter": true
+            },
+            {
+              "nodeId": "declined",
+              "text": "Come back if your schedule opens up.",
+              "closeAfter": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "triggers": [
+    {
+      // Unique across all trigger definitions.
+      "triggerId": "example_world_trigger",
+
+      // Higher priority is tried first if multiple triggers overlap.
+      "priority": 100,
+
+      // Map asset where this trigger exists.
+      "mapAssetName": "Maps/GameMap",
+
+      // Conversation to start.
+      "conversationId": "npc_example_conversation",
+
+      // Optional override. Leave empty to use the conversation speaker.
+      "speakerName": "Narration",
+
+      // Optional Tiled object trigger zone.
+      "triggerObjectName": "ExampleTriggerZone",
+
+      // Optional fallback trigger center if no object is used.
+      "fallbackX": 240.0,
+      "fallbackY": 992.0,
+
+      // Fallback trigger radius.
+      "interactionRadius": 64.0
+    }
+  ]
+}

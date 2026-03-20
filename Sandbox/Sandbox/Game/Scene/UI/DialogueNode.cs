@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Engine.UI;
@@ -96,7 +97,8 @@ internal sealed class DialogueNode
         const int margin = 16;
         const int gap = 12;
         int panelHeight = HasResponseOptions ? 150 : 122;
-        int responseWidth = MathHelper.Clamp((int)(virtualWidth * 0.33f), 175, 300);
+        int availableWidth = virtualWidth - margin * 2 - gap;
+        int responseWidth = MathHelper.Clamp(availableWidth / 2, 220, Math.Max(220, availableWidth - 220));
 
         Rectangle responseRect = new(
             margin,
@@ -107,7 +109,7 @@ internal sealed class DialogueNode
         Rectangle dialogueRect = new(
             responseRect.Right + gap,
             virtualHeight - panelHeight - margin,
-            virtualWidth - margin - (responseRect.Right + gap),
+            availableWidth - responseWidth,
             panelHeight);
 
         DrawPanel(spriteBatch, responseRect, new Color(16, 20, 28, 235), new Color(76, 96, 128), false);

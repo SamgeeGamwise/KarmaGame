@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset version="1.10" tiledversion="1.11.2" name="Modern Exterior Master Tileset part 6" tilewidth="32" tileheight="32" tilecount="8544" columns="128">
+ <image source="Modern Exterior Master Tileset 32x32 part 6.png" width="4096" height="2144"/>
+</tileset>

@@ -53,10 +53,40 @@
 /processor:TiledMapTilesetProcessor
 /build:Maps/Modern Exterior Master Tileset.tsx
 
+#begin Maps/Modern Exterior Master Tileset part 2.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Exterior Master Tileset part 2.tsx
+
+#begin Maps/Modern Exterior Master Tileset part 3.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Exterior Master Tileset part 3.tsx
+
+#begin Maps/Modern Exterior Master Tileset part 4.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Exterior Master Tileset part 4.tsx
+
+#begin Maps/Modern Exterior Master Tileset part 5.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Exterior Master Tileset part 5.tsx
+
+#begin Maps/Modern Exterior Master Tileset part 6.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Exterior Master Tileset part 6.tsx
+
 #begin Maps/Modern Interior Master Tileset.tsx
 /importer:TiledMapTilesetImporter
 /processor:TiledMapTilesetProcessor
 /build:Maps/Modern Interior Master Tileset.tsx
+
+#begin Maps/Modern Interior Master Tileset part 2.tsx
+/importer:TiledMapTilesetImporter
+/processor:TiledMapTilesetProcessor
+/build:Maps/Modern Interior Master Tileset part 2.tsx
 
 #begin UI/UIFont.spritefont
 /importer:FontDescriptionImporter

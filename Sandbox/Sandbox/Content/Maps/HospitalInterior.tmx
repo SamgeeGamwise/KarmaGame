@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="12">
  <tileset firstgid="1" source="Modern Interior Master Tileset.tsx"/>
- <tileset firstgid="8513" source="Modern Interior Master Tileset 32x32 part 2.tsx"/>
+ <tileset firstgid="8513" source="Modern Interior Master Tileset part 2.tsx"/>
  <tileset firstgid="17025" source="Modern Exterior Master Tileset.tsx"/>
+ <tileset firstgid="33409" source="Modern Exterior Master Tileset part 2.tsx"/>
+ <tileset firstgid="49793" source="Modern Exterior Master Tileset part 3.tsx"/>
+ <tileset firstgid="66177" source="Modern Exterior Master Tileset part 4.tsx"/>
+ <tileset firstgid="82561" source="Modern Exterior Master Tileset part 5.tsx"/>
+ <tileset firstgid="98945" source="Modern Exterior Master Tileset part 6.tsx"/>
  <layer id="2" name="Ground" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
